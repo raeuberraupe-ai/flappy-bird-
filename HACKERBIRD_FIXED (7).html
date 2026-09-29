@@ -1,0 +1,10421 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1.0,
+      maximum-scale=1.0,user-scalable=no">
+
+<title>HACKERBIRD // NEON RUN</title>
+
+<style>
+
+/* =========================================================
+   HACKERBIRD // GLOBAL RESET
+========================================================= */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    -webkit-tap-highlight-color:transparent;
+}
+
+html,
+body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+}
+
+body{
+    background:#020308;
+    color:#f1f7ff;
+    font-family:
+        Inter,
+        Arial,
+        Helvetica,
+        sans-serif;
+    user-select:none;
+    -webkit-user-select:none;
+}
+
+/* =========================================================
+   ROOT
+========================================================= */
+
+#app{
+    position:relative;
+    width:100vw;
+    height:100vh;
+    overflow:hidden;
+    background:
+        radial-gradient(
+            circle at 50% 20%,
+            #10264a 0%,
+            #050816 42%,
+            #010205 100%
+        );
+}
+
+/* =========================================================
+   CANVAS
+========================================================= */
+
+#gameCanvas{
+    position:absolute;
+    inset:0;
+
+    width:100%;
+    height:100%;
+
+    display:block;
+
+    touch-action:none;
+
+    z-index:1;
+}
+
+/* =========================================================
+   SCREEN SYSTEM
+========================================================= */
+
+.screen{
+    position:absolute;
+    inset:0;
+
+    display:flex;
+    flex-direction:column;
+
+    z-index:20;
+
+    opacity:0;
+    visibility:hidden;
+
+    pointer-events:none;
+
+    transition:
+        opacity .25s ease,
+        visibility .25s ease;
+}
+
+.screen.active{
+    opacity:1;
+    visibility:visible;
+    pointer-events:auto;
+}
+
+/* =========================================================
+   MAIN MENU
+========================================================= */
+
+#menuScreen{
+    align-items:center;
+    justify-content:center;
+
+    padding:24px;
+
+    background:
+        radial-gradient(
+            circle at 50% 30%,
+            rgba(0,220,255,.08),
+            transparent 35%
+        );
+}
+
+/* =========================================================
+   LOGO
+========================================================= */
+
+.logoWrapper{
+    position:relative;
+
+    text-align:center;
+
+    margin-bottom:30px;
+}
+
+.logo{
+    font-size:
+        clamp(
+            38px,
+            8vw,
+            82px
+        );
+
+    line-height:1;
+
+    font-weight:1000;
+
+    letter-spacing:
+        clamp(
+            4px,
+            1vw,
+            10px
+        );
+
+    color:#53ecff;
+
+    text-shadow:
+        0 0 8px #00d9ff,
+        0 0 25px #00bfff,
+        0 0 70px rgba(0,200,255,.65);
+
+    animation:
+        logoPulse 3s ease-in-out infinite;
+}
+
+.logoAccent{
+    color:#ff4fd8;
+
+    text-shadow:
+        0 0 8px #ff4fd8,
+        0 0 25px #ff149d,
+        0 0 60px rgba(255,0,170,.5);
+}
+
+.logoSub{
+    margin-top:10px;
+
+    color:#6e8297;
+
+    font-size:
+        clamp(
+            9px,
+            2vw,
+            13px
+        );
+
+    letter-spacing:4px;
+
+    text-transform:uppercase;
+}
+
+@keyframes logoPulse{
+
+    0%,
+    100%{
+        filter:
+            brightness(1);
+    }
+
+    50%{
+        filter:
+            brightness(1.25);
+    }
+}
+
+/* =========================================================
+   MENU CARD
+========================================================= */
+
+.menuCard{
+    width:
+        min(
+            430px,
+            calc(100vw - 32px)
+        );
+
+    padding:26px;
+
+    border:
+        1px solid
+        rgba(0,220,255,.18);
+
+    border-radius:24px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(8,18,34,.88),
+            rgba(2,5,13,.94)
+        );
+
+    box-shadow:
+        0 0 80px
+        rgba(0,180,255,.08),
+
+        inset 0 1px 0
+        rgba(255,255,255,.04);
+
+    backdrop-filter:
+        blur(20px);
+}
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.menuButton{
+    position:relative;
+
+    width:100%;
+
+    min-height:54px;
+
+    margin-top:11px;
+
+    border:
+        1px solid
+        rgba(0,220,255,.25);
+
+    border-radius:14px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(9,31,49,.95),
+            rgba(5,14,26,.95)
+        );
+
+    color:#eafaff;
+
+    font-size:14px;
+
+    font-weight:900;
+
+    letter-spacing:2px;
+
+    cursor:pointer;
+
+    overflow:hidden;
+
+    transition:
+        transform .15s ease,
+        border-color .15s ease,
+        background .15s ease,
+        box-shadow .15s ease;
+}
+
+.menuButton::before{
+    content:"";
+
+    position:absolute;
+
+    top:0;
+    left:-120%;
+
+    width:80%;
+    height:100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255,255,255,.12),
+            transparent
+        );
+
+    transform:skewX(-20deg);
+
+    transition:left .5s ease;
+}
+
+.menuButton:hover::before{
+    left:140%;
+}
+
+.menuButton:hover{
+    transform:
+        translateY(-2px);
+
+    border-color:
+        rgba(0,230,255,.7);
+
+    box-shadow:
+        0 0 25px
+        rgba(0,200,255,.12);
+}
+
+.menuButton:active{
+    transform:
+        translateY(1px)
+        scale(.985);
+}
+
+.menuButton.primary{
+    color:#001016;
+
+    border:0;
+
+    background:
+        linear-gradient(
+            135deg,
+            #39edff,
+            #008cff
+        );
+
+    box-shadow:
+        0 0 30px
+        rgba(0,210,255,.2);
+}
+
+.menuButton.danger{
+    color:#ffb6d9;
+
+    border-color:
+        rgba(255,70,150,.25);
+}
+
+/* =========================================================
+   TOP BAR
+========================================================= */
+
+.topBar{
+    position:absolute;
+
+    top:14px;
+    left:14px;
+    right:14px;
+
+    display:flex;
+
+    align-items:center;
+    justify-content:space-between;
+
+    gap:10px;
+
+    z-index:50;
+
+    pointer-events:none;
+}
+
+.topBarLeft,
+.topBarRight{
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    pointer-events:auto;
+}
+
+.statusPill{
+    display:flex;
+
+    align-items:center;
+
+    gap:7px;
+
+    padding:
+        8px 11px;
+
+    border:
+        1px solid
+        rgba(0,220,255,.18);
+
+    border-radius:11px;
+
+    background:
+        rgba(3,10,19,.72);
+
+    backdrop-filter:
+        blur(14px);
+
+    color:#b9d0de;
+
+    font-size:10px;
+
+    font-weight:800;
+
+    letter-spacing:1px;
+}
+
+.statusDot{
+    width:7px;
+    height:7px;
+
+    border-radius:50%;
+
+    background:#16ff91;
+
+    box-shadow:
+        0 0 10px
+        #16ff91;
+}
+
+.iconButton{
+    width:39px;
+    height:39px;
+
+    border:
+        1px solid
+        rgba(0,220,255,.18);
+
+    border-radius:11px;
+
+    background:
+        rgba(3,10,19,.72);
+
+    color:#d9f7ff;
+
+    cursor:pointer;
+
+    backdrop-filter:
+        blur(14px);
+
+    font-size:17px;
+
+    transition:
+        transform .15s ease,
+        border-color .15s ease;
+}
+
+.iconButton:hover{
+    transform:
+        translateY(-2px);
+
+    border-color:
+        rgba(0,220,255,.6);
+}
+
+/* =========================================================
+   GAME HUD
+========================================================= */
+
+#gameHUD{
+    position:absolute;
+
+    top:14px;
+    left:14px;
+    right:14px;
+
+    z-index:10;
+
+    display:none;
+
+    pointer-events:none;
+}
+
+#gameHUD.active{
+    display:block;
+}
+
+.hudRow{
+    display:flex;
+
+    justify-content:
+        space-between;
+
+    align-items:flex-start;
+
+    gap:10px;
+}
+
+.hudGroup{
+    display:flex;
+
+    gap:8px;
+
+    flex-wrap:wrap;
+}
+
+.hudCard{
+    min-width:76px;
+
+    padding:
+        8px 12px;
+
+    border:
+        1px solid
+        rgba(0,220,255,.17);
+
+    border-radius:12px;
+
+    background:
+        rgba(3,10,19,.72);
+
+    backdrop-filter:
+        blur(14px);
+
+    box-shadow:
+        0 8px 30px
+        rgba(0,0,0,.15);
+}
+
+.hudLabel{
+    color:#60788a;
+
+    font-size:8px;
+
+    font-weight:900;
+
+    letter-spacing:1.8px;
+
+    text-transform:uppercase;
+}
+
+.hudValue{
+    margin-top:2px;
+
+    color:#f4fcff;
+
+    font-size:18px;
+
+    font-weight:1000;
+}
+
+.hudValue.cyan{
+    color:#49eaff;
+
+    text-shadow:
+        0 0 12px
+        rgba(0,220,255,.5);
+}
+
+.hudValue.gold{
+    color:#ffd85a;
+
+    text-shadow:
+        0 0 12px
+        rgba(255,200,50,.4);
+}
+
+.hudValue.pink{
+    color:#ff68dc;
+
+    text-shadow:
+        0 0 12px
+        rgba(255,50,200,.4);
+}
+
+/* =========================================================
+   XP BAR
+========================================================= */
+
+.xpContainer{
+    position:absolute;
+
+    left:50%;
+
+    top:82px;
+
+    transform:
+        translateX(-50%);
+
+    width:
+        min(
+            360px,
+            45vw
+        );
+
+    z-index:12;
+}
+
+.xpText{
+    display:flex;
+
+    justify-content:
+        space-between;
+
+    color:#668092;
+
+    font-size:8px;
+
+    font-weight:900;
+
+    letter-spacing:1px;
+
+    margin-bottom:4px;
+}
+
+.xpBar{
+    height:5px;
+
+    overflow:hidden;
+
+    border-radius:10px;
+
+    background:
+        rgba(255,255,255,.06);
+
+    border:
+        1px solid
+        rgba(0,220,255,.1);
+}
+
+.xpFill{
+    width:0%;
+
+    height:100%;
+
+    border-radius:10px;
+
+    background:
+        linear-gradient(
+            90deg,
+            #00d9ff,
+            #8d4dff,
+            #ff4fd8
+        );
+
+    box-shadow:
+        0 0 15px
+        rgba(80,150,255,.6);
+
+    transition:
+        width .3s ease;
+}
+
+/* =========================================================
+   SHOP SCREEN
+========================================================= */
+
+#shopScreen{
+    padding:
+        80px 18px 24px;
+
+    overflow:auto;
+
+    align-items:center;
+
+    background:
+        radial-gradient(
+            circle at 50% 20%,
+            rgba(0,200,255,.06),
+            transparent 35%
+        );
+}
+
+.screenHeader{
+    width:
+        min(
+            1000px,
+            100%
+        );
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+
+    margin-bottom:20px;
+}
+
+.screenTitle{
+    font-size:
+        clamp(
+            25px,
+            5vw,
+            42px
+        );
+
+    font-weight:1000;
+
+    letter-spacing:2px;
+
+    color:#effcff;
+}
+
+.screenSubtitle{
+    margin-top:5px;
+
+    color:#607789;
+
+    font-size:11px;
+
+    letter-spacing:1px;
+}
+
+.backButton{
+    padding:
+        10px 14px;
+
+    border:
+        1px solid
+        rgba(0,220,255,.2);
+
+    border-radius:11px;
+
+    background:
+        rgba(4,12,22,.8);
+
+    color:#a8d8e8;
+
+    cursor:pointer;
+
+    font-weight:800;
+}
+
+/* =========================================================
+   SHOP WALLET
+========================================================= */
+
+.wallet{
+    display:flex;
+
+    align-items:center;
+
+    gap:8px;
+
+    padding:
+        9px 13px;
+
+    border:
+        1px solid
+        rgba(255,210,70,.18);
+
+    border-radius:11px;
+
+    background:
+        rgba(20,16,4,.7);
+
+    color:#ffd957;
+
+    font-size:12px;
+
+    font-weight:900;
+}
+
+/* =========================================================
+   SHOP GRID
+========================================================= */
+
+.shopGrid{
+    width:
+        min(
+            1000px,
+            100%
+        );
+
+    display:grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(
+                180px,
+                1fr
+            )
+        );
+
+    gap:13px;
+
+    padding-bottom:30px;
+}
+
+.shopItem{
+    position:relative;
+
+    min-height:210px;
+
+    padding:16px;
+
+    border:
+        1px solid
+        rgba(0,220,255,.13);
+
+    border-radius:18px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(8,18,32,.9),
+            rgba(2,6,14,.95)
+        );
+
+    box-shadow:
+        0 15px 45px
+        rgba(0,0,0,.15);
+
+    overflow:hidden;
+
+    transition:
+        transform .18s ease,
+        border-color .18s ease;
+}
+
+.shopItem:hover{
+    transform:
+        translateY(-4px);
+
+    border-color:
+        rgba(0,220,255,.4);
+}
+
+.shopPreview{
+    height:105px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    position:relative;
+}
+
+.shopPreviewGlow{
+    position:absolute;
+
+    width:90px;
+    height:90px;
+
+    border-radius:50%;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(0,220,255,.22),
+            transparent 65%
+        );
+
+    filter:
+        blur(10px);
+}
+
+.fakeBird{
+    position:relative;
+
+    width:42px;
+    height:42px;
+
+    border-radius:50%;
+
+    background:#ff4fd8;
+
+    box-shadow:
+        0 0 25px
+        currentColor;
+}
+
+.fakeBird::after{
+    content:"";
+
+    position:absolute;
+
+    right:-14px;
+    top:17px;
+
+    width:0;
+    height:0;
+
+    border-top:
+        6px solid transparent;
+
+    border-bottom:
+        6px solid transparent;
+
+    border-left:
+        15px solid #ffd05a;
+}
+
+.itemName{
+    font-size:14px;
+
+    font-weight:1000;
+
+    letter-spacing:1px;
+}
+
+.itemDescription{
+    margin-top:5px;
+
+    color:#607789;
+
+    min-height:32px;
+
+    font-size:10px;
+
+    line-height:1.5;
+}
+
+.itemButton{
+    width:100%;
+
+    margin-top:11px;
+
+    min-height:38px;
+
+    border:
+        1px solid
+        rgba(0,220,255,.18);
+
+    border-radius:10px;
+
+    background:#071724;
+
+    color:#bdefff;
+
+    cursor:pointer;
+
+    font-size:10px;
+
+    font-weight:900;
+
+    letter-spacing:1px;
+}
+
+/* =========================================================
+   SECRET CODE PANEL
+========================================================= */
+
+.secretPanel{
+    width:
+        min(
+            1000px,
+            100%
+        );
+
+    margin-top:4px;
+
+    margin-bottom:22px;
+
+    padding:18px;
+
+    border:
+        1px solid
+        rgba(20,255,140,.2);
+
+    border-radius:18px;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(1,17,12,.88),
+            rgba(2,7,9,.95)
+        );
+
+    box-shadow:
+        0 0 50px
+        rgba(0,255,130,.05);
+}
+
+.secretHeader{
+    display:flex;
+
+    align-items:center;
+
+    justify-content:space-between;
+}
+
+.secretTitle{
+    color:#42ff9d;
+
+    font-family:
+        monospace;
+
+    font-size:13px;
+
+    font-weight:900;
+
+    letter-spacing:2px;
+}
+
+.secretStatus{
+    color:#2a8f62;
+
+    font-family:
+        monospace;
+
+    font-size:9px;
+
+    letter-spacing:1px;
+}
+
+.secretDescription{
+    margin-top:7px;
+
+    color:#527969;
+
+    font-family:
+        monospace;
+
+    font-size:10px;
+}
+
+.secretInputRow{
+    display:flex;
+
+    gap:8px;
+
+    margin-top:13px;
+}
+
+#secretCodeInput{
+    flex:1;
+
+    min-width:0;
+
+    height:43px;
+    padding:
+        0 13px;
+
+    outline:none;
+
+    border:
+        1px solid
+        rgba(20,255,140,.18);
+
+    border-radius:10px;
+
+    background:
+        #020906;
+
+    color:#6dffae;
+
+    font-family:
+        monospace;
+
+    font-size:12px;
+}
+
+#secretCodeInput:focus{
+    border-color:
+        rgba(20,255,140,.55);
+
+    box-shadow:
+        0 0 20px
+        rgba(20,255,140,.08);
+}
+
+#redeemCodeButton{
+    height:43px;
+
+    padding:
+        0 17px;
+
+    border:0;
+
+    border-radius:10px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #15ff91,
+            #00b96a
+        );
+
+    color:#00150b;
+
+    font-family:
+        monospace;
+
+    font-size:10px;
+
+    font-weight:1000;
+
+    cursor:pointer;
+}
+
+/* =========================================================
+   CODE MESSAGE
+========================================================= */
+
+#codeMessage{
+    min-height:17px;
+
+    margin-top:9px;
+
+    color:#3b8e68;
+
+    font-family:
+        monospace;
+
+    font-size:10px;
+}
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.modalLayer{
+    position:absolute;
+
+    inset:0;
+
+    z-index:100;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:18px;
+
+    background:
+        rgba(0,0,0,.65);
+
+    backdrop-filter:
+        blur(8px);
+
+    opacity:0;
+
+    visibility:hidden;
+
+    pointer-events:none;
+
+    transition:
+        opacity .2s ease,
+        visibility .2s ease;
+}
+
+.modalLayer.active{
+    opacity:1;
+
+    visibility:visible;
+
+    pointer-events:auto;
+}
+
+.modal{
+    width:
+        min(
+            450px,
+            100%
+        );
+
+    padding:25px;
+
+    border:
+        1px solid
+        rgba(0,220,255,.25);
+
+    border-radius:22px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #091523,
+            #02060d
+        );
+
+    box-shadow:
+        0 30px 100px
+        rgba(0,0,0,.55);
+}
+
+.modalTitle{
+    font-size:23px;
+
+    font-weight:1000;
+
+    letter-spacing:1px;
+}
+
+.modalText{
+    margin-top:9px;
+
+    color:#72899a;
+
+    font-size:12px;
+
+    line-height:1.6;
+}
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+#toast{
+    position:absolute;
+
+    left:50%;
+    bottom:28px;
+
+    transform:
+        translate(-50%,30px);
+
+    z-index:300;
+
+    max-width:
+        calc(100vw - 30px);
+
+    padding:
+        12px 18px;
+
+    border:
+        1px solid
+        rgba(0,220,255,.3);
+
+    border-radius:12px;
+
+    background:
+        rgba(3,10,19,.94);
+
+    box-shadow:
+        0 15px 50px
+        rgba(0,0,0,.4);
+
+    color:#eaffff;
+
+    font-size:11px;
+
+    font-weight:900;
+
+    letter-spacing:.8px;
+
+    opacity:0;
+
+    pointer-events:none;
+
+    transition:
+        opacity .25s ease,
+        transform .25s ease;
+}
+
+#toast.show{
+    opacity:1;
+
+    transform:
+        translate(-50%,0);
+}
+
+/* =========================================================
+   UTILITY
+========================================================= */
+
+.hidden{
+    display:none !important;
+}
+
+.noPointer{
+    pointer-events:none !important;
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:600px){
+
+    .menuCard{
+        padding:20px;
+    }
+
+    .menuButton{
+        min-height:51px;
+    }
+
+    .xpContainer{
+        top:75px;
+
+        width:
+            min(
+                270px,
+                60vw
+            );
+    }
+
+    .hudCard{
+        min-width:62px;
+
+        padding:
+            7px 9px;
+    }
+
+    .hudValue{
+        font-size:15px;
+    }
+
+    .screenHeader{
+        align-items:flex-start;
+    }
+
+    .screenTitle{
+        font-size:28px;
+    }
+
+    .secretInputRow{
+        flex-direction:column;
+    }
+
+    #redeemCodeButton{
+        width:100%;
+    }
+
+    .shopGrid{
+        grid-template-columns:
+            repeat(
+                2,
+                minmax(
+                    0,
+                    1fr
+                )
+            );
+    }
+}
+
+@media(max-width:380px){
+
+    .shopGrid{
+        grid-template-columns:1fr;
+    }
+
+    .topBar{
+        gap:5px;
+    }
+
+    .statusPill{
+        padding:
+            7px 8px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="app">
+
+    <!-- =====================================================
+         CANVAS
+    ====================================================== -->
+
+    <canvas id="gameCanvas"></canvas>
+
+
+    <!-- =====================================================
+         MAIN MENU
+    ====================================================== -->
+
+    <section
+        id="menuScreen"
+        class="screen active"
+    >
+
+        <div class="logoWrapper">
+
+            <div class="logo">
+                HACKER<span class="logoAccent">BIRD</span>
+            </div>
+
+            <div class="logoSub">
+                NEON RUN // SYSTEM ONLINE
+            </div>
+
+        </div>
+
+
+        <div class="menuCard">
+
+            <button
+                id="playButton"
+                class="menuButton primary"
+            >
+                ▶ &nbsp; PLAY
+            </button>
+
+            <button
+                id="shopButton"
+                class="menuButton"
+            >
+                ◈ &nbsp; SHOP
+            </button>
+
+            <button
+                id="missionsButton"
+                class="menuButton"
+            >
+                ◆ &nbsp; MISSIONS
+            </button>
+
+            <button
+                id="settingsButton"
+                class="menuButton"
+            >
+                ⚙ &nbsp; SETTINGS
+            </button>
+
+            <button
+                id="aboutButton"
+                class="menuButton"
+            >
+                ◉ &nbsp; ABOUT
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         GAME HUD
+    ====================================================== -->
+
+    <div id="gameHUD">
+
+        <div class="hudRow">
+
+            <div class="hudGroup">
+
+                <div class="hudCard">
+
+                    <div class="hudLabel">
+                        Score
+                    </div>
+
+                    <div
+                        id="hudScore"
+                        class="hudValue cyan"
+                    >
+                        0
+                    </div>
+
+                </div>
+
+
+                <div class="hudCard">
+
+                    <div class="hudLabel">
+                        Combo
+                    </div>
+
+                    <div
+                        id="hudCombo"
+                        class="hudValue pink"
+                    >
+                        x1
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div class="hudGroup">
+
+                <div class="hudCard">
+
+                    <div class="hudLabel">
+                        Coins
+                    </div>
+
+                    <div
+                        id="hudCoins"
+                        class="hudValue gold"
+                    >
+                        0
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="xpContainer">
+
+            <div class="xpText">
+
+                <span>
+                    LVL <span id="hudLevel">1</span>
+                </span>
+
+                <span>
+                    <span id="hudXP">0</span> XP
+                </span>
+
+            </div>
+
+            <div class="xpBar">
+
+                <div
+                    id="hudXPFill"
+                    class="xpFill"
+                ></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         SHOP
+    ====================================================== -->
+
+    <section
+        id="shopScreen"
+        class="screen"
+    >
+
+        <div class="screenHeader">
+
+            <div>
+
+                <div class="screenTitle">
+                    SHOP
+                </div>
+
+                <div class="screenSubtitle">
+                    CUSTOMIZE YOUR RUN
+                </div>
+
+            </div>
+
+
+            <div style="
+                display:flex;
+                align-items:center;
+                gap:8px;
+            ">
+
+                <div class="wallet">
+                    ◉
+                    <span id="shopCoins">
+                        0
+                    </span>
+                </div>
+
+                <button
+                    id="shopBackButton"
+                    class="backButton"
+                >
+                    ← BACK
+                </button>
+
+            </div>
+
+        </div>
+
+
+        <!-- SECRET CODES -->
+
+        <div class="secretPanel">
+
+            <div class="secretHeader">
+
+                <div class="secretTitle">
+                    // SECRET ACCESS
+                </div>
+
+                <div class="secretStatus">
+                    TERMINAL ONLINE
+                </div>
+
+            </div>
+
+
+            <div class="secretDescription">
+                ENTER A VALID ACCESS CODE TO UNLOCK HIDDEN CONTENT.
+            </div>
+
+
+            <div class="secretInputRow">
+
+                <input
+                    id="secretCodeInput"
+                    type="text"
+                    autocomplete="off"
+                    autocapitalize="off"
+                    spellcheck="false"
+                    placeholder="ENTER SECRET CODE..."
+                >
+
+                <button
+                    id="redeemCodeButton"
+                >
+                    REDEEM
+                </button>
+
+            </div>
+
+
+            <div id="codeMessage"></div>
+
+        </div>
+
+
+        <!-- SHOP ITEMS -->
+
+        <div
+            id="shopGrid"
+            class="shopGrid"
+        ></div>
+
+    </section>
+
+
+    <!-- =====================================================
+         MISSIONS
+    ====================================================== -->
+
+    <section
+        id="missionsScreen"
+        class="screen"
+    >
+
+        <div class="screenHeader">
+
+            <div>
+
+                <div class="screenTitle">
+                    MISSIONS
+                </div>
+
+                <div class="screenSubtitle">
+                    COMPLETE OBJECTIVES. EARN XP.
+                </div>
+
+            </div>
+
+            <button
+                id="missionsBackButton"
+                class="backButton"
+            >
+                ← BACK
+            </button>
+
+        </div>
+
+
+        <div
+            id="missionsGrid"
+            class="shopGrid"
+        ></div>
+
+    </section>
+
+
+    <!-- =====================================================
+         SETTINGS
+    ====================================================== -->
+
+    <section
+        id="settingsScreen"
+        class="screen"
+    >
+
+        <div class="screenHeader">
+
+            <div>
+
+                <div class="screenTitle">
+                    SETTINGS
+                </div>
+
+                <div class="screenSubtitle">
+                    SYSTEM CONFIGURATION
+                </div>
+
+            </div>
+
+            <button
+                id="settingsBackButton"
+                class="backButton"
+            >
+                ← BACK
+            </button>
+
+        </div>
+
+
+        <div
+            class="menuCard"
+            style="width:min(600px,100%)"
+        >
+
+            <button
+                id="soundToggle"
+                class="menuButton"
+            >
+                🔊 SOUND: ON
+            </button>
+
+            <button
+                id="particlesToggle"
+                class="menuButton"
+            >
+                ✦ PARTICLES: ON
+            </button>
+
+            <button
+                id="resetButton"
+                class="menuButton danger"
+            >
+                ⚠ RESET SAVE DATA
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         ABOUT
+    ====================================================== -->
+
+    <section
+        id="aboutScreen"
+        class="screen"
+    >
+
+        <div class="screenHeader">
+
+            <div>
+
+                <div class="screenTitle">
+                    ABOUT
+                </div>
+
+                <div class="screenSubtitle">
+                    HACKERBIRD // NEON RUN
+                </div>
+
+            </div>
+
+            <button
+                id="aboutBackButton"
+                class="backButton"
+            >
+                ← BACK
+            </button>
+
+        </div>
+
+
+        <div
+            class="menuCard"
+            style="width:min(650px,100%)"
+        >
+
+            <div class="modalTitle">
+                HACKERBIRD
+            </div>
+
+            <div class="modalText">
+                A neon arcade flight experience.
+                Fly through the city, collect coins,
+                increase your combo and discover
+                secret systems.
+            </div>
+
+            <div
+                class="modalText"
+                style="margin-top:18px"
+            >
+                VERSION 1.0 // CLASSIFIED
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         MODAL
+    ====================================================== -->
+
+    <div
+        id="modalLayer"
+        class="modalLayer"
+    >
+
+        <div class="modal">
+
+            <div
+                id="modalTitle"
+                class="modalTitle"
+            >
+                SYSTEM
+            </div>
+
+            <div
+                id="modalText"
+                class="modalText"
+            >
+                ...
+            </div>
+
+            <button
+                id="modalClose"
+                class="menuButton primary"
+            >
+                CLOSE
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         TOAST
+    ====================================================== -->
+
+    <div id="toast"></div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   HACKERBIRD // APPLICATION CORE
+   PART 1
+========================================================= */
+
+"use strict";
+
+
+/* =========================================================
+   DOM REFERENCES
+========================================================= */
+
+const APP =
+    document.getElementById("app");
+
+const CANVAS =
+    document.getElementById("gameCanvas");
+
+const CTX =
+    CANVAS.getContext("2d");
+
+
+/* =========================================================
+   SCREEN REFERENCES
+========================================================= */
+
+const SCREENS = {
+
+    menu:
+        document.getElementById(
+            "menuScreen"
+        ),
+
+    shop:
+        document.getElementById(
+            "shopScreen"
+        ),
+
+    missions:
+        document.getElementById(
+            "missionsScreen"
+        ),
+
+    settings:
+        document.getElementById(
+            "settingsScreen"
+        ),
+
+    about:
+        document.getElementById(
+            "aboutScreen"
+        )
+
+};
+
+
+/* =========================================================
+   BUTTON REFERENCES
+========================================================= */
+
+const BUTTONS = {
+
+    play:
+        document.getElementById(
+            "playButton"
+        ),
+
+    shop:
+        document.getElementById(
+            "shopButton"
+        ),
+
+    missions:
+        document.getElementById(
+            "missionsButton"
+        ),
+
+    settings:
+        document.getElementById(
+            "settingsButton"
+        ),
+
+    about:
+        document.getElementById(
+            "aboutButton"
+        ),
+
+    shopBack:
+        document.getElementById(
+            "shopBackButton"
+        ),
+
+    missionsBack:
+        document.getElementById(
+            "missionsBackButton"
+        ),
+
+    settingsBack:
+        document.getElementById(
+            "settingsBackButton"
+        ),
+
+    aboutBack:
+        document.getElementById(
+            "aboutBackButton"
+        )
+
+};
+
+
+/* =========================================================
+   GAME HUD REFERENCES
+========================================================= */
+
+const HUD = {
+
+    root:
+        document.getElementById(
+            "gameHUD"
+        ),
+
+    score:
+        document.getElementById(
+            "hudScore"
+        ),
+
+    combo:
+        document.getElementById(
+            "hudCombo"
+        ),
+
+    coins:
+        document.getElementById(
+            "hudCoins"
+        ),
+
+    level:
+        document.getElementById(
+            "hudLevel"
+        ),
+
+    xp:
+        document.getElementById(
+            "hudXP"
+        ),
+
+    xpFill:
+        document.getElementById(
+            "hudXPFill"
+        )
+
+};
+
+
+/* =========================================================
+   SHOP REFERENCES
+========================================================= */
+
+const SHOP = {
+
+    grid:
+        document.getElementById(
+            "shopGrid"
+        ),
+
+    coins:
+        document.getElementById(
+            "shopCoins"
+        ),
+
+    input:
+        document.getElementById(
+            "secretCodeInput"
+        ),
+
+    redeem:
+        document.getElementById(
+            "redeemCodeButton"
+        ),
+
+    message:
+        document.getElementById(
+            "codeMessage"
+        )
+
+};
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+const MODAL = {
+
+    layer:
+        document.getElementById(
+            "modalLayer"
+        ),
+
+    title:
+        document.getElementById(
+            "modalTitle"
+        ),
+
+    text:
+        document.getElementById(
+            "modalText"
+        ),
+
+    close:
+        document.getElementById(
+            "modalClose"
+        )
+
+};
+
+
+/* =========================================================
+   GAME STATE
+========================================================= */
+
+const GameState = {
+
+    screen:
+        "menu",
+
+    running:
+        false,
+
+    paused:
+        false,
+
+    score:
+        0,
+
+    coins:
+        0,
+
+    xp:
+        0,
+
+    level:
+        1,
+
+    combo:
+        1,
+
+    bestScore:
+        0,
+
+    sound:
+        true,
+
+    particles:
+        true,
+
+    selectedSkin:
+        "classic",
+
+    unlockedSkins:
+        ["classic"],
+
+    completedMissions:
+        [],
+
+    discoveredCodes:
+        [],
+
+    totalFlights:
+        0,
+
+    totalCoins:
+        0,
+
+    totalGates:
+        0
+
+};
+
+
+/* =========================================================
+   DEFAULT SAVE
+========================================================= */
+
+const DEFAULT_SAVE = {
+
+    coins:0,
+
+    xp:0,
+
+    level:1,
+
+    bestScore:0,
+
+    sound:true,
+
+    particles:true,
+
+    selectedSkin:"classic",
+
+    unlockedSkins:[
+        "classic"
+    ],
+
+    completedMissions:[],
+
+    discoveredCodes:[],
+
+    totalFlights:0,
+
+    totalCoins:0,
+
+    totalGates:0
+
+};
+
+
+/* =========================================================
+   SAFE SAVE LOAD
+========================================================= */
+
+function loadSave(){
+
+    try{
+
+        const raw =
+            localStorage.getItem(
+                "hackerbird_save"
+            );
+
+        if(!raw){
+
+            Object.assign(
+                GameState,
+                structuredClone
+                    ? structuredClone(
+                        DEFAULT_SAVE
+                      )
+                    : DEFAULT_SAVE
+            );
+
+            return;
+        }
+
+        const data =
+            JSON.parse(raw);
+
+        Object.assign(
+            GameState,
+            DEFAULT_SAVE,
+            data
+        );
+
+    }catch(error){
+
+        console.warn(
+            "Save could not be loaded.",
+            error
+        );
+
+        Object.assign(
+            GameState,
+            DEFAULT_SAVE
+        );
+    }
+}
+
+
+/* =========================================================
+   SAVE GAME
+========================================================= */
+
+function saveGame(){
+
+    try{
+
+        localStorage.setItem(
+            "hackerbird_save",
+            JSON.stringify(
+                GameState
+            )
+        );
+
+    }catch(error){
+    console.warn(
+            "Save could not be written.",
+            error
+        );
+    }
+}
+
+
+/* =========================================================
+   SCREEN NAVIGATION
+========================================================= */
+
+function showScreen(
+    name
+){
+
+    Object.values(
+        SCREENS
+    ).forEach(
+        screen => {
+            screen.classList.remove(
+                "active"
+            );
+        }
+    );
+
+
+    /* "game" ist ein Canvas-Zustand und hat keinen eigenen Screen. */
+    if(
+        name === "game"
+    ){
+
+        GameState.screen =
+            "game";
+
+    }
+    else if(
+        SCREENS[name]
+    ){
+
+        SCREENS[name]
+            .classList.add(
+                "active"
+            );
+
+        GameState.screen =
+            name;
+    }
+
+
+    HUD.root.classList.toggle(
+        "active",
+        name === "game"
+    );
+
+
+    if(name === "shop"){
+
+        renderShop();
+
+    }
+
+
+    if(name === "missions"){
+
+        renderMissions();
+
+    }
+
+}
+
+
+/* =========================================================
+   TOAST SYSTEM
+========================================================= */
+
+let toastTimeout = null;
+
+function showToast(
+    message
+){
+
+    const toast =
+        document.getElementById(
+            "toast"
+        );
+
+    toast.textContent =
+        message;
+
+    toast.classList.add(
+        "show"
+    );
+
+
+    clearTimeout(
+        toastTimeout
+    );
+
+
+    toastTimeout =
+        setTimeout(
+            () => {
+
+                toast.classList.remove(
+                    "show"
+                );
+
+            },
+            2400
+        );
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+function openModal(
+    title,
+    text
+){
+
+    MODAL.title.textContent =
+        title;
+
+    MODAL.text.textContent =
+        text;
+
+    MODAL.layer.classList.add(
+        "active"
+    );
+}
+
+
+function closeModal(){
+
+    MODAL.layer.classList.remove(
+        "active"
+    );
+}
+
+
+/* =========================================================
+   XP
+========================================================= */
+
+function xpForNextLevel(){
+
+    return (
+        100 +
+        (
+            GameState.level - 1
+        ) * 75
+    );
+}
+
+
+function addXP(
+    amount
+){
+
+    GameState.xp +=
+        amount;
+
+
+    let required =
+        xpForNextLevel();
+
+
+    while(
+        GameState.xp >= required
+    ){
+
+        GameState.xp -=
+            required;
+
+        GameState.level++;
+
+        showToast(
+            "LEVEL UP // LVL " +
+            GameState.level
+        );
+
+        required =
+            xpForNextLevel();
+    }
+
+
+    updateHUD();
+
+    saveGame();
+}
+
+
+/* =========================================================
+   HUD UPDATE
+========================================================= */
+
+function updateHUD(){
+
+    HUD.score.textContent =
+        GameState.score;
+
+    HUD.combo.textContent =
+        "x" +
+        GameState.combo;
+
+    HUD.coins.textContent =
+        GameState.coins;
+
+    HUD.level.textContent =
+        GameState.level;
+
+    HUD.xp.textContent =
+        GameState.xp;
+
+    const required =
+        xpForNextLevel();
+
+    const percentage =
+        Math.min(
+            100,
+            (
+                GameState.xp /
+                required
+            ) * 100
+        );
+
+    HUD.xpFill.style.width =
+        percentage + "%";
+
+    SHOP.coins.textContent =
+        GameState.coins;
+}
+
+
+/* =========================================================
+   MENU EVENTS
+========================================================= */
+
+BUTTONS.play.addEventListener(
+    "click",
+    () => {
+
+        startGame();
+
+    }
+);
+
+
+BUTTONS.shop.addEventListener(
+    "click",
+    () => {
+
+        showScreen(
+            "shop"
+        );
+
+    }
+);
+
+
+BUTTONS.missions.addEventListener(
+    "click",
+    () => {
+
+        showScreen(
+            "missions"
+        );
+
+    }
+);
+
+
+BUTTONS.settings.addEventListener(
+    "click",
+    () => {
+
+        showScreen(
+            "settings"
+        );
+
+    }
+);
+
+
+BUTTONS.about.addEventListener(
+    "click",
+    () => {
+
+        showScreen(
+            "about"
+        );
+
+    }
+);
+
+
+/* =========================================================
+   BACK BUTTONS
+========================================================= */
+
+BUTTONS.shopBack.addEventListener(
+    "click",
+    () => {
+
+        showScreen(
+            "menu"
+        );
+
+    }
+);
+
+
+BUTTONS.missionsBack.addEventListener(
+    "click",
+    () => {
+
+        showScreen(
+            "menu"
+        );
+
+    }
+);
+
+
+BUTTONS.settingsBack.addEventListener(
+    "click",
+    () => {
+
+        showScreen(
+            "menu"
+        );
+
+    }
+);
+
+
+BUTTONS.aboutBack.addEventListener(
+    "click",
+    () => {
+
+        showScreen(
+            "menu"
+        );
+
+    }
+);
+
+
+/* =========================================================
+   MODAL EVENT
+========================================================= */
+
+MODAL.close.addEventListener(
+    "click",
+    closeModal
+);
+
+
+/* =========================================================
+   SETTINGS EVENTS
+========================================================= */
+
+document
+    .getElementById(
+        "soundToggle"
+    )
+    .addEventListener(
+        "click",
+        function(){
+
+            GameState.sound =
+                !GameState.sound;
+
+            this.textContent =
+                GameState.sound
+                    ? "🔊 SOUND: ON"
+                    : "🔇 SOUND: OFF";
+
+            saveGame();
+
+        }
+    );
+
+
+document
+    .getElementById(
+        "particlesToggle"
+    )
+    .addEventListener(
+        "click",
+        function(){
+
+            GameState.particles =
+                !GameState.particles;
+
+            this.textContent =
+                GameState.particles
+                    ? "✦ PARTICLES: ON"
+                    : "✦ PARTICLES: OFF";
+
+            saveGame();
+
+        }
+    );
+
+
+document
+    .getElementById(
+        "resetButton"
+    )
+    .addEventListener(
+        "click",
+        () => {
+
+            const confirmed =
+                confirm(
+                    "Wirklich ALLE gespeicherten Daten löschen?"
+                );
+
+            if(!confirmed)
+                return;
+
+            localStorage.removeItem(
+                "hackerbird_save"
+            );
+
+            location.reload();
+
+        }
+    );
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+loadSave();
+
+updateHUD();
+
+document
+    .getElementById(
+        "soundToggle"
+    )
+    .textContent =
+        GameState.sound
+            ? "🔊 SOUND: ON"
+            : "🔇 SOUND: OFF";
+
+
+document
+    .getElementById(
+        "particlesToggle"
+    )
+    .textContent =
+        GameState.particles
+            ? "✦ PARTICLES: ON"
+            : "✦ PARTICLES: OFF";
+
+
+console.log(
+    "%cHACKERBIRD SYSTEM ONLINE",
+    "color:#36eaff;font-weight:bold;font-size:16px"
+);
+
+console.log(
+    "%cCLASSIFIED // DO NOT DISTRIBUTE",
+    "color:#ff4fd8;font-weight:bold"
+);
+
+</script>
+
+<script>
+
+/* =========================================================
+   HACKERBIRD // GAME ENGINE
+   PART 2
+========================================================= */
+
+
+/* =========================================================
+   CANVAS SIZE
+========================================================= */
+
+let canvasWidth = 0;
+let canvasHeight = 0;
+let deviceScale = 1;
+
+
+/* =========================================================
+   RESIZE CANVAS
+========================================================= */
+
+function resizeCanvas(){
+
+    const rect =
+        CANVAS.getBoundingClientRect();
+
+    deviceScale =
+        Math.min(
+            window.devicePixelRatio || 1,
+            2
+        );
+
+    canvasWidth =
+        rect.width;
+
+    canvasHeight =
+        rect.height;
+
+    CANVAS.width =
+        Math.floor(
+            canvasWidth *
+            deviceScale
+        );
+
+    CANVAS.height =
+        Math.floor(
+            canvasHeight *
+            deviceScale
+        );
+
+    CTX.setTransform(
+        deviceScale,
+        0,
+        0,
+        deviceScale,
+        0,
+        0
+    );
+}
+
+
+window.addEventListener(
+    "resize",
+    resizeCanvas
+);
+
+resizeCanvas();
+
+
+/* =========================================================
+   GAME CONFIG
+========================================================= */
+
+const GAME_CONFIG = {
+
+    gravity:
+        1450,
+
+    jumpForce:
+        -460,
+
+    birdX:
+        0.24,
+
+    birdSize:
+        34,
+
+    pipeWidth:
+        70,
+
+    pipeGap:
+        185,
+
+    pipeSpeed:
+        240,
+
+    pipeDistance:
+        300,
+
+    coinRadius:
+        9,
+
+    maxParticles:
+        350,
+
+    groundHeight:
+        65,
+
+    spawnDelay:
+        1.35
+
+};
+
+
+/* =========================================================
+   RUNTIME STATE
+========================================================= */
+
+const Runtime = {
+
+    lastTime:
+        0,
+
+    elapsed:
+        0,
+
+    pipeTimer:
+        0,
+
+    difficulty:
+        1,
+
+    speed:
+        GAME_CONFIG.pipeSpeed,
+
+    gameOver:
+        false,
+
+    started:
+        false,
+
+    cameraShake:
+        0,
+
+    flash:
+        0,
+
+    scorePulse:
+        0
+
+};
+
+
+/* =========================================================
+   BIRD OBJECT
+========================================================= */
+
+const Bird = {
+
+    x:
+        0,
+
+    y:
+        0,
+
+    velocityY:
+        0,
+
+    rotation:
+        0,
+
+    radius:
+        GAME_CONFIG.birdSize / 2,
+
+    wing:
+        0,
+
+    alive:
+        true,
+
+    reset(){
+
+        this.x =
+            canvasWidth *
+            GAME_CONFIG.birdX;
+
+        this.y =
+            canvasHeight *
+            0.45;
+
+        this.velocityY =
+            0;
+
+        this.rotation =
+            0;
+
+        this.wing =
+            0;
+
+        this.alive =
+            true;
+    },
+
+    flap(){
+
+        if(
+            !this.alive ||
+            Runtime.gameOver
+        ){
+            return;
+        }
+
+        this.velocityY =
+            GAME_CONFIG.jumpForce;
+
+        this.wing =
+            1;
+
+        createBurst(
+            this.x - 15,
+            this.y + 7,
+            "#44eaff",
+            7
+        );
+
+        playTone(
+            520,
+            0.055,
+            "square",
+            0.045
+        );
+    },
+
+    update(dt){
+
+        if(
+            !this.alive
+        ){
+            return;
+        }
+
+        this.velocityY +=
+            GAME_CONFIG.gravity *
+            dt;
+
+        this.y +=
+            this.velocityY *
+            dt;
+
+        this.rotation =
+            Math.max(
+                -0.45,
+                Math.min(
+                    1.15,
+                    this.velocityY /
+                    700
+                )
+            );
+
+        this.wing +=
+            dt * 14;
+
+        if(
+            this.y -
+            this.radius <
+            0
+        ){
+
+            this.y =
+                this.radius;
+
+            this.velocityY =
+                0;
+        }
+
+        const groundY =
+            canvasHeight -
+            GAME_CONFIG.groundHeight;
+
+        if(
+            this.y +
+            this.radius >
+            groundY
+        ){
+
+            this.y =
+                groundY -
+                this.radius;
+
+            endGame();
+        }
+    }
+
+};
+
+
+/* =========================================================
+   PIPES
+========================================================= */
+
+const Pipes = [];
+
+
+function createPipe(){
+
+    const margin =
+        80;
+
+    const groundY =
+        canvasHeight -
+        GAME_CONFIG.groundHeight;
+
+    const gap =
+        Math.max(
+            135,
+            GAME_CONFIG.pipeGap -
+            Runtime.difficulty * 5
+        );
+
+    const minTop =
+        margin;
+
+    const maxTop =
+        groundY -
+        gap -
+        margin;
+
+    const top =
+        minTop +
+        Math.random() *
+        Math.max(
+            1,
+            maxTop -
+            minTop
+        );
+
+    const pipe = {
+
+        x:
+            canvasWidth +
+            GAME_CONFIG.pipeWidth,
+
+        top,
+
+        gap,
+
+        width:
+            GAME_CONFIG.pipeWidth,
+
+        passed:
+            false,
+
+        coinCollected:
+            false,
+
+        glow:
+            Math.random() *
+            Math.PI * 2
+
+    };
+
+    Pipes.push(
+        pipe
+    );
+}
+
+
+/* =========================================================
+   UPDATE PIPES
+========================================================= */
+
+function updatePipes(dt){
+
+    Runtime.pipeTimer +=
+        dt;
+
+    const delay =
+        Math.max(
+            0.88,
+            GAME_CONFIG.spawnDelay -
+            Runtime.difficulty *
+            0.035
+        );
+
+    if(
+        Runtime.pipeTimer >=
+        delay
+    ){
+
+        Runtime.pipeTimer =
+            0;
+
+        createPipe();
+    }
+
+
+    for(
+        let i = Pipes.length - 1;
+        i >= 0;
+        i--
+    ){
+
+        const pipe =
+            Pipes[i];
+
+        pipe.x -=
+            Runtime.speed *
+            dt;
+
+        pipe.glow +=
+            dt * 2;
+
+
+        if(
+            !pipe.passed &&
+            pipe.x +
+            pipe.width <
+            Bird.x
+        ){
+
+            pipe.passed =
+                true;
+
+            scoreGate();
+
+        }
+
+
+        if(
+            pipe.x +
+            pipe.width <
+            -100
+        ){
+
+            Pipes.splice(
+                i,
+                1
+            );
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   SCORE GATE
+========================================================= */
+
+function scoreGate(){
+
+    GameState.score +=
+        GameState.combo;
+
+    GameState.totalGates++;
+
+    GameState.combo =
+        Math.min(
+            25,
+            GameState.combo + 1
+        );
+
+    Runtime.scorePulse =
+        1;
+
+    createBurst(
+        Bird.x,
+        Bird.y,
+        "#ff4fd8",
+        14
+    );
+
+    playTone(
+        740 +
+        GameState.combo * 12,
+        0.07,
+        "sine",
+        0.035
+    );
+
+    addXP(
+        5 +
+        GameState.combo
+    );
+
+    updateHUD();
+
+}
+
+
+/* =========================================================
+   COINS
+========================================================= */
+
+const Coins = [];
+
+
+function createCoin(){
+
+    if(
+        Pipes.length === 0
+    ){
+        return;
+    }
+
+    const pipe =
+        Pipes[Pipes.length - 1];
+
+    const centerY =
+        pipe.top +
+        pipe.gap / 2;
+
+    Coins.push({
+
+        x:
+            pipe.x +
+            pipe.width / 2,
+
+        y:
+            centerY,
+
+        radius:
+            GAME_CONFIG.coinRadius,
+
+        rotation:
+            Math.random() *
+            Math.PI,
+
+        collected:
+            false,
+
+        pulse:
+            Math.random() *
+            Math.PI * 2
+
+    });
+
+}
+
+
+/* =========================================================
+   COIN SPAWN
+========================================================= */
+
+let coinTimer = 0;
+
+
+function updateCoins(dt){
+
+    coinTimer +=
+        dt;
+
+    if(
+        coinTimer > 2.15
+    ){
+
+        coinTimer =
+            0;
+
+        createCoin();
+    }
+
+
+    for(
+        let i = Coins.length - 1;
+        i >= 0;
+        i--
+    ){
+
+        const coin =
+            Coins[i];
+
+        coin.x -=
+            Runtime.speed *
+            dt;
+
+        coin.rotation +=
+            dt * 4;
+
+        coin.pulse +=
+            dt * 5;
+
+
+        if(
+            coin.x +
+            coin.radius <
+            -50
+        ){
+
+            Coins.splice(
+                i,
+                1
+            );
+
+            continue;
+        }
+
+
+        if(
+            circleCollision(
+                Bird.x,
+                Bird.y,
+                Bird.radius,
+                coin.x,
+                coin.y,
+                coin.radius
+            )
+        ){
+
+            collectCoin(
+                coin,
+                i
+            );
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   COLLECT COIN
+========================================================= */
+
+function collectCoin(
+    coin,
+    index
+){
+
+    if(
+        coin.collected
+    ){
+        return;
+    }
+
+    coin.collected =
+        true;
+
+    GameState.coins++;
+
+    GameState.totalCoins++;
+
+    addXP(
+        2
+    );
+
+    createCoinBurst(
+        coin.x,
+        coin.y
+    );
+
+    playTone(
+        880,
+        0.055,
+        "sine",
+        0.05
+    );
+
+    playTone(
+        1320,
+        0.08,
+        "sine",
+        0.035
+    );
+
+    Coins.splice(
+        index,
+        1
+    );
+
+    updateHUD();
+
+}
+
+
+/* =========================================================
+   COLLISION HELPERS
+========================================================= */
+
+function circleCollision(
+    ax,
+    ay,
+    ar,
+    bx,
+    by,
+    br
+){
+
+    const dx =
+        ax - bx;
+
+    const dy =
+        ay - by;
+
+    const distance =
+        Math.sqrt(
+            dx * dx +
+            dy * dy
+        );
+
+    return (
+        distance <
+        ar + br
+    );
+}
+
+
+/* =========================================================
+   PIPE COLLISION
+========================================================= */
+
+function checkPipeCollision(){
+
+    const bx =
+        Bird.x;
+
+    const by =
+        Bird.y;
+
+    const r =
+        Bird.radius;
+
+    for(
+        const pipe of Pipes
+    ){
+
+        const topRect = {
+
+            x:
+                pipe.x,
+
+            y:
+                0,
+
+            width:
+                pipe.width,
+
+            height:
+                pipe.top
+
+        };
+
+        const bottomY =
+            pipe.top +
+            pipe.gap;
+
+        const groundY =
+            canvasHeight -
+            GAME_CONFIG.groundHeight;
+
+        const bottomRect = {
+
+            x:
+                pipe.x,
+
+            y:
+                bottomY,
+
+            width:
+                pipe.width,
+
+            height:
+                groundY -
+                bottomY
+
+        };
+
+
+        if(
+            circleRectCollision(
+                bx,
+                by,
+                r,
+                topRect
+            ) ||
+            circleRectCollision(
+                bx,
+                by,
+                r,
+                bottomRect
+            )
+        ){
+
+            endGame();
+
+            return;
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   CIRCLE / RECTANGLE COLLISION
+========================================================= */
+
+function circleRectCollision(
+    cx,
+    cy,
+    radius,
+    rect
+){
+
+    const closestX =
+        Math.max(
+            rect.x,
+            Math.min(
+                cx,
+                rect.x +
+                rect.width
+            )
+        );
+
+    const closestY =
+        Math.max(
+            rect.y,
+            Math.min(
+                cy,
+                rect.y +
+                rect.height
+            )
+        );
+
+    const dx =
+        cx -
+        closestX;
+
+    const dy =
+        cy -
+        closestY;
+
+    return (
+        dx * dx +
+        dy * dy <
+        radius * radius
+    );
+}
+
+
+/* =========================================================
+   PARTICLES
+========================================================= */
+
+const Particles = [];
+
+
+function createParticle(
+    x,
+    y,
+    color,
+    options = {}
+){
+
+    if(
+        !GameState.particles
+    ){
+        return;
+    }
+
+    if(
+        Particles.length >=
+        GAME_CONFIG.maxParticles
+    ){
+
+        Particles.shift();
+    }
+
+
+    const angle =
+        options.angle ??
+        Math.random() *
+        Math.PI *
+        2;
+
+    const speed =
+        options.speed ??
+        (
+            40 +
+            Math.random() *
+            130
+        );
+
+    Particles.push({
+
+        x,
+
+        y,
+
+        vx:
+            Math.cos(angle) *
+            speed,
+
+        vy:
+            Math.sin(angle) *
+            speed,
+
+        life:
+            options.life ??
+            0.5,
+
+        maxLife:
+            options.life ??
+            0.5,
+
+        size:
+            options.size ??
+            (
+                2 +
+                Math.random() * 4
+            ),
+
+        color,
+
+        gravity:
+            options.gravity ??
+            0,
+
+        glow:
+            options.glow ??
+            true
+            });
+
+}
+
+
+function createBurst(
+    x,
+    y,
+    color,
+    count = 10
+){
+
+    for(
+        let i = 0;
+        i < count;
+        i++
+    ){
+
+        createParticle(
+            x,
+            y,
+            color,
+            {
+                speed:
+                    35 +
+                    Math.random() *
+                    150,
+
+                life:
+                    .25 +
+                    Math.random() *
+                    .45,
+
+                size:
+                    1.5 +
+                    Math.random() *
+                    3
+            }
+        );
+    }
+
+}
+
+
+function createCoinBurst(
+    x,
+    y
+){
+
+    for(
+        let i = 0;
+        i < 18;
+        i++
+    ){
+
+        createParticle(
+            x,
+            y,
+            i % 2 === 0
+                ? "#ffd84d"
+                : "#fff3a0",
+            {
+                speed:
+                    50 +
+                    Math.random() *
+                    190,
+
+                life:
+                    .35 +
+                    Math.random() *
+                    .4,
+
+                size:
+                    2 +
+                    Math.random() *
+                    4
+            }
+        );
+    }
+
+}
+
+
+function updateParticles(
+    dt
+){
+
+    for(
+        let i =
+            Particles.length - 1;
+        i >= 0;
+        i--
+    ){
+
+        const p =
+            Particles[i];
+
+        p.life -=
+            dt;
+
+        if(
+            p.life <= 0
+        ){
+
+            Particles.splice(
+                i,
+                1
+            );
+
+            continue;
+        }
+
+        p.vy +=
+            p.gravity *
+            dt;
+
+        p.x +=
+            p.vx *
+            dt;
+
+        p.y +=
+            p.vy *
+            dt;
+
+        p.vx *=
+            0.985;
+
+        p.vy *=
+            0.985;
+    }
+
+}
+
+
+/* =========================================================
+   BACKGROUND STARS
+========================================================= */
+
+const Stars = [];
+
+
+function createStars(){
+
+    Stars.length =
+        0;
+
+    const count =
+        Math.floor(
+            canvasWidth /
+            7
+        );
+
+    for(
+        let i = 0;
+        i < count;
+        i++
+    ){
+
+        Stars.push({
+
+            x:
+                Math.random() *
+                canvasWidth,
+
+            y:
+                Math.random() *
+                canvasHeight,
+
+            size:
+                .5 +
+                Math.random() *
+                1.8,
+
+            speed:
+                8 +
+                Math.random() *
+                35,
+
+            alpha:
+                .15 +
+                Math.random() *
+                .7,
+
+            twinkle:
+                Math.random() *
+                Math.PI * 2
+
+        });
+    }
+
+}
+
+
+function updateStars(
+    dt
+){
+
+    for(
+        const star of Stars
+    ){
+
+        star.x -=
+            star.speed *
+            dt;
+
+        star.twinkle +=
+            dt * 2;
+
+        if(
+            star.x < -5
+        ){
+
+            star.x =
+                canvasWidth +
+                5;
+
+            star.y =
+                Math.random() *
+                canvasHeight;
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   DRAW BACKGROUND
+========================================================= */
+
+function drawBackground(){
+
+    const gradient =
+        CTX.createLinearGradient(
+            0,
+            0,
+            0,
+            canvasHeight
+        );
+
+    gradient.addColorStop(
+        0,
+        "#020615"
+    );
+
+    gradient.addColorStop(
+        .45,
+        "#07152a"
+    );
+
+    gradient.addColorStop(
+        1,
+        "#020308"
+    );
+
+    CTX.fillStyle =
+        gradient;
+
+    CTX.fillRect(
+        0,
+        0,
+        canvasWidth,
+        canvasHeight
+    );
+
+
+    /* CITY GLOW */
+
+    const glow =
+        CTX.createRadialGradient(
+            canvasWidth * .7,
+            canvasHeight * .55,
+            0,
+            canvasWidth * .7,
+            canvasHeight * .55,
+            canvasWidth * .65
+        );
+
+    glow.addColorStop(
+        0,
+        "rgba(0,190,255,.08)"
+    );
+
+    glow.addColorStop(
+        1,
+        "rgba(0,0,0,0)"
+    );
+
+    CTX.fillStyle =
+        glow;
+
+    CTX.fillRect(
+        0,
+        0,
+        canvasWidth,
+        canvasHeight
+    );
+
+
+    /* STARS */
+
+    for(
+        const star of Stars
+    ){
+
+        const alpha =
+            star.alpha *
+            (
+                .7 +
+                Math.sin(
+                    star.twinkle
+                ) * .3
+            );
+
+        CTX.fillStyle =
+            `rgba(150,230,255,${alpha})`;
+
+        CTX.beginPath();
+
+        CTX.arc(
+            star.x,
+            star.y,
+            star.size,
+            0,
+            Math.PI * 2
+        );
+
+        CTX.fill();
+    }
+
+
+    /* DISTANT CITY */
+
+    drawCityLayer(
+        canvasHeight -
+        GAME_CONFIG.groundHeight -
+        95,
+        0.35,
+        "#071325"
+    );
+
+    drawCityLayer(
+        canvasHeight -
+        GAME_CONFIG.groundHeight -
+        45,
+        0.6,
+        "#09192b"
+    );
+
+}
+
+
+/* =========================================================
+   CITY LAYER
+========================================================= */
+
+function drawCityLayer(
+    baseY,
+    alpha,
+    color
+){
+
+    const buildingWidth =
+        55;
+
+    let x =
+        0;
+
+    let index =
+        0;
+
+    while(
+        x <
+        canvasWidth +
+        buildingWidth
+    ){
+
+        const height =
+            30 +
+            (
+                (
+                    index * 37
+                ) %
+                100
+            );
+
+        CTX.fillStyle =
+            color;
+
+        CTX.globalAlpha =
+            alpha;
+
+        CTX.fillRect(
+            x,
+            baseY - height,
+            buildingWidth - 5,
+            height
+        );
+
+
+        for(
+            let wy = 10;
+            wy < height - 5;
+            wy += 13
+        ){
+
+            if(
+                (
+                    index +
+                    Math.floor(
+                        wy / 13
+                    )
+                ) % 3 === 0
+            ){
+
+                CTX.fillStyle =
+                    "rgba(0,220,255,.12)";
+
+                CTX.fillRect(
+                    x + 9,
+                    baseY -
+                    height +
+                    wy,
+                    6,
+                    3
+                );
+            }
+        }
+
+
+        x +=
+            buildingWidth;
+
+        index++;
+    }
+
+    CTX.globalAlpha =
+        1;
+}
+
+
+/* =========================================================
+   DRAW GROUND
+========================================================= */
+
+function drawGround(){
+
+    const groundY =
+        canvasHeight -
+        GAME_CONFIG.groundHeight;
+
+    const gradient =
+        CTX.createLinearGradient(
+            0,
+            groundY,
+            0,
+            canvasHeight
+        );
+
+    gradient.addColorStop(
+        0,
+        "#10263b"
+    );
+
+    gradient.addColorStop(
+        1,
+        "#02060b"
+    );
+
+    CTX.fillStyle =
+        gradient;
+
+    CTX.fillRect(
+        0,
+        groundY,
+        canvasWidth,
+        GAME_CONFIG.groundHeight
+    );
+
+
+    CTX.fillStyle =
+        "rgba(0,220,255,.5)";
+
+    CTX.fillRect(
+        0,
+        groundY,
+        canvasWidth,
+        2
+    );
+
+
+    CTX.globalAlpha =
+        .35;
+
+    CTX.strokeStyle =
+        "#17627d";
+
+    CTX.lineWidth =
+        1;
+
+    const offset =
+        (
+            Runtime.elapsed *
+            Runtime.speed
+        ) % 60;
+
+    for(
+        let x = -60 + offset;
+        x < canvasWidth + 60;
+        x += 60
+    ){
+
+        CTX.beginPath();
+
+        CTX.moveTo(
+            x,
+            groundY + 10
+        );
+
+        CTX.lineTo(
+            x - 25,
+            canvasHeight
+        );
+
+        CTX.stroke();
+    }
+
+    CTX.globalAlpha =
+        1;
+}
+
+
+/* =========================================================
+   DRAW PIPE
+========================================================= */
+
+function drawPipe(
+    pipe
+){
+
+    const topEnd =
+        pipe.top;
+
+    const bottomStart =
+        pipe.top +
+        pipe.gap;
+
+    const groundY =
+        canvasHeight -
+        GAME_CONFIG.groundHeight;
+
+
+    /* TOP */
+
+    drawPipePart(
+        pipe.x,
+        0,
+        pipe.width,
+        topEnd,
+        true
+    );
+
+
+    /* BOTTOM */
+
+    drawPipePart(
+        pipe.x,
+        bottomStart,
+        pipe.width,
+        groundY -
+        bottomStart,
+        false
+    );
+
+}
+
+
+function drawPipePart(
+    x,
+    y,
+    width,
+    height,
+    top
+){
+
+    if(
+        height <= 0
+    ){
+        return;
+    }
+
+
+    const gradient =
+        CTX.createLinearGradient(
+            x,
+            0,
+            x + width,
+            0
+        );
+
+    gradient.addColorStop(
+        0,
+        "#052a3d"
+    );
+
+    gradient.addColorStop(
+        .45,
+        "#0a6a83"
+    );
+
+    gradient.addColorStop(
+        .7,
+        "#13c8dd"
+    );
+
+    gradient.addColorStop(
+        1,
+        "#06384d"
+    );
+
+    CTX.fillStyle =
+        gradient;
+
+    CTX.shadowColor =
+        "rgba(0,220,255,.45)";
+
+    CTX.shadowBlur =
+        15;
+
+    CTX.fillRect(
+        x,
+        y,
+        width,
+        height
+    );
+
+    CTX.shadowBlur =
+        0;
+
+
+    /* PIPE EDGE */
+
+    CTX.strokeStyle =
+        "rgba(90,245,255,.65)";
+
+    CTX.lineWidth =
+        1;
+
+    CTX.strokeRect(
+        x,
+        y,
+        width,
+        height
+    );
+
+
+    /* CAP */
+
+    const capHeight =
+        17;
+
+    const capY =
+        top
+            ? height - capHeight
+            : y;
+
+
+    CTX.fillStyle =
+        "#14a9c1";
+
+    CTX.fillRect(
+        x - 5,
+        capY,
+        width + 10,
+        capHeight
+    );
+
+
+    CTX.strokeStyle =
+        "#59f4ff";
+
+    CTX.strokeRect(
+        x - 5,
+        capY,
+        width + 10,
+        capHeight
+    );
+
+
+    /* CIRCUIT LINES */
+
+    CTX.strokeStyle =
+        "rgba(150,255,255,.2)";
+
+    CTX.lineWidth =
+        1;
+
+    for(
+        let yy =
+            y + 25;
+        yy <
+            y +
+            height -
+            25;
+        yy += 31
+    ){
+
+        CTX.beginPath();
+
+        CTX.moveTo(
+            x + 10,
+            yy
+        );
+
+        CTX.lineTo(
+            x + width - 10,
+            yy
+        );
+
+        CTX.stroke();
+    }
+
+}
+
+
+/* =========================================================
+   DRAW COINS
+========================================================= */
+
+function drawCoin(
+    coin
+){
+
+    const pulse =
+        1 +
+        Math.sin(
+            coin.pulse
+        ) *
+        .08;
+
+    const radius =
+        coin.radius *
+        pulse;
+
+
+    CTX.save();
+
+    CTX.translate(
+        coin.x,
+        coin.y
+    );
+
+    const scaleX =
+        Math.cos(
+            coin.rotation
+        );
+
+    CTX.scale(
+        Math.max(
+            .18,
+            Math.abs(scaleX)
+        ),
+        1
+    );
+
+
+    CTX.shadowColor =
+        "#ffd43d";
+
+    CTX.shadowBlur =
+        20;
+
+    CTX.fillStyle =
+        "#ffd43d";
+
+    CTX.beginPath();
+
+    CTX.arc(
+        0,
+        0,
+        radius,
+        0,
+        Math.PI * 2
+    );
+
+    CTX.fill();
+
+
+    CTX.shadowBlur =
+        0;
+
+    CTX.strokeStyle =
+        "#fff1a3";
+
+    CTX.lineWidth =
+        2;
+
+    CTX.stroke();
+
+
+    CTX.fillStyle =
+        "#fff6bd";
+
+    CTX.font =
+        "bold 10px Arial";
+
+    CTX.textAlign =
+        "center";
+
+    CTX.textBaseline =
+        "middle";
+
+    CTX.fillText(
+        "$",
+        0,
+        1
+    );
+
+
+    CTX.restore();
+
+}
+
+
+/* =========================================================
+   DRAW BIRD
+========================================================= */
+
+function drawBird(){
+
+    const skin =
+        getCurrentSkin();
+
+
+    CTX.save();
+
+    CTX.translate(
+        Bird.x,
+        Bird.y
+    );
+
+    CTX.rotate(
+        Bird.rotation
+    );
+
+
+    /* GLOW */
+
+    CTX.shadowColor =
+        skin.glow;
+
+    CTX.shadowBlur =
+        24;
+
+
+    /* BODY */
+
+    const bodyGradient =
+        CTX.createLinearGradient(
+            -18,
+            -18,
+            18,
+            18
+        );
+
+    bodyGradient.addColorStop(
+        0,
+        skin.primary
+    );
+
+    bodyGradient.addColorStop(
+        .55,
+        skin.secondary
+    );
+
+    bodyGradient.addColorStop(
+        1,
+        skin.dark
+    );
+
+    CTX.fillStyle =
+        bodyGradient;
+
+    CTX.beginPath();
+
+    CTX.arc(
+        0,
+        0,
+        Bird.radius,
+        0,
+        Math.PI * 2
+    );
+
+    CTX.fill();
+
+
+    CTX.shadowBlur =
+        0;
+
+
+    /* WING */
+
+    const wingOffset =
+        Math.sin(
+            Bird.wing
+        ) * 5;
+
+    CTX.fillStyle =
+        skin.secondary;
+
+    CTX.beginPath();
+
+    CTX.ellipse(
+        -8,
+        7 + wingOffset,
+        14,
+        7,
+        -.35,
+        0,
+        Math.PI * 2
+    );
+
+    CTX.fill();
+
+
+    /* EYE */
+
+    CTX.fillStyle =
+        "#ffffff";
+
+    CTX.beginPath();
+
+    CTX.arc(
+        9,
+        -8,
+        7,
+        0,
+        Math.PI * 2
+    );
+
+    CTX.fill();
+
+
+    CTX.fillStyle =
+        "#05070b";
+
+    CTX.beginPath();
+
+    CTX.arc(
+        11,
+        -8,
+        3,
+        0,
+        Math.PI * 2
+    );
+
+    CTX.fill();
+
+
+    /* BEAK */
+
+    CTX.fillStyle =
+        "#ffd34d";
+
+    CTX.beginPath();
+
+    CTX.moveTo(
+        15,
+        -1
+    );
+
+    CTX.lineTo(
+        30,
+        5
+    );
+
+    CTX.lineTo(
+        15,
+        9
+    );
+
+    CTX.closePath();
+
+    CTX.fill();
+
+
+    /* HIGHLIGHT */
+
+    CTX.fillStyle =
+        "rgba(255,255,255,.55)";
+
+    CTX.beginPath();
+
+    CTX.arc(
+        -8,
+        -10,
+        4,
+        0,
+        Math.PI * 2
+    );
+
+    CTX.fill();
+
+
+    CTX.restore();
+
+}
+
+
+/* =========================================================
+   DRAW PARTICLES
+========================================================= */
+
+function drawParticles(){
+
+    for(
+        const p of Particles
+    ){
+
+        const alpha =
+            Math.max(
+                0,
+                p.life /
+                p.maxLife
+            );
+
+        CTX.save();
+
+        CTX.globalAlpha =
+            alpha;
+
+        if(
+            p.glow
+        ){
+
+            CTX.shadowColor =
+                p.color;
+
+            CTX.shadowBlur =
+                10;
+        }
+
+        CTX.fillStyle =
+            p.color;
+
+        CTX.beginPath();
+
+        CTX.arc(
+            p.x,
+            p.y,
+            p.size,
+            0,
+            Math.PI * 2
+        );
+
+        CTX.fill();
+
+        CTX.restore();
+    }
+
+}
+
+
+/* =========================================================
+   DRAW GAME
+========================================================= */
+
+function drawGame(){
+
+    CTX.clearRect(
+        0,
+        0,
+        canvasWidth,
+        canvasHeight
+    );
+
+
+    CTX.save();
+
+
+    /* SCREEN SHAKE */
+
+    if(
+        Runtime.cameraShake > 0
+    ){
+
+        const strength =
+            Runtime.cameraShake *
+            7;
+
+        CTX.translate(
+            (
+                Math.random() -
+                .5
+            ) * strength,
+
+            (
+                Math.random() -
+                .5
+            ) * strength
+        );
+    }
+
+
+    drawBackground();
+
+
+    for(
+        const pipe of Pipes
+    ){
+
+        drawPipe(
+            pipe
+        );
+    }
+
+
+    for(
+        const coin of Coins
+    ){
+
+        drawCoin(
+            coin
+        );
+    }
+
+
+    drawGround();
+
+    drawParticles();
+
+    drawBird();
+
+
+    CTX.restore();
+
+
+    /* WHITE FLASH */
+
+    if(
+        Runtime.flash > 0
+    ){
+
+        CTX.fillStyle =
+            `rgba(255,255,255,${Runtime.flash})`;
+
+        CTX.fillRect(
+            0,
+            0,
+            canvasWidth,
+            canvasHeight
+        );
+    }
+
+}
+
+
+/* =========================================================
+   UPDATE GAME
+========================================================= */
+
+function updateGame(
+    dt
+){
+
+    if(
+        !GameState.running ||
+        Runtime.gameOver
+    ){
+        return;
+    }
+
+
+    Runtime.elapsed +=
+        dt;
+
+
+    Runtime.difficulty =
+        Math.min(
+            10,
+            1 +
+            GameState.score /
+            40
+        );
+
+
+    Runtime.speed =
+        GAME_CONFIG.pipeSpeed +
+        Runtime.difficulty *
+        13;
+
+
+    Bird.update(
+        dt
+    );
+
+    updatePipes(
+        dt
+    );
+
+    updateCoins(
+        dt
+    );
+
+    updateParticles(
+        dt
+    );
+
+    updateStars(
+        dt
+    );
+
+
+    checkPipeCollision();
+
+
+    if(
+        Runtime.cameraShake > 0
+    ){
+
+        Runtime.cameraShake =
+            Math.max(
+                0,
+                Runtime.cameraShake -
+                dt * 3
+            );
+    }
+
+
+    if(
+        Runtime.flash > 0
+    ){
+
+        Runtime.flash =
+            Math.max(
+                0,
+                Runtime.flash -
+                dt * 4
+            );
+    }
+
+
+    if(
+        Runtime.scorePulse > 0
+    ){
+
+        Runtime.scorePulse =
+            Math.max(
+                0,
+                Runtime.scorePulse -
+                dt * 5
+            );
+    }
+
+}
+
+
+/* =========================================================
+   MAIN LOOP
+========================================================= */
+
+function gameLoop(
+    timestamp
+){
+
+    if(
+        !Runtime.lastTime
+    ){
+
+        Runtime.lastTime =
+            timestamp;
+    }
+
+
+    let dt =
+        (
+            timestamp -
+            Runtime.lastTime
+        ) / 1000;
+
+
+    Runtime.lastTime =
+        timestamp;
+
+
+    dt =
+        Math.min(
+            .035,
+            Math.max(
+                0,
+                dt
+            )
+        );
+
+
+    updateGame(
+        dt
+    );
+
+    drawGame();
+
+
+    requestAnimationFrame(
+        gameLoop
+    );
+
+}
+
+
+/* =========================================================
+   START GAME
+========================================================= */
+
+function startGame(){
+
+    GameState.running =
+        true;
+
+    GameState.paused =
+        false;
+
+    GameState.score =
+        0;
+
+    GameState.combo =
+        1;
+
+    Runtime.gameOver =
+        false;
+
+    Runtime.started =
+        true;
+
+    Runtime.elapsed =
+        0;
+
+    Runtime.pipeTimer =
+        .5;
+
+    Runtime.difficulty =
+        1;
+
+    Runtime.speed =
+        GAME_CONFIG.pipeSpeed;
+
+    Runtime.cameraShake =
+        0;
+
+    Runtime.flash =
+        0;
+
+    Pipes.length =
+        0;
+
+    Coins.length =
+        0;
+
+    Particles.length =
+        0;
+
+    coinTimer =
+        0;
+
+    Bird.reset();
+
+    createStars();
+
+    showScreen(
+        "game"
+    );
+
+    HUD.root.classList.add(
+        "active"
+    );
+
+    playTone(
+        440,
+        .08,
+        "square",
+        .03
+    );
+
+    updateHUD();
+
+}
+
+
+/* =========================================================
+   END GAME
+========================================================= */
+
+function endGame(){
+
+    if(
+        Runtime.gameOver
+    ){
+        return;
+    }
+
+    Runtime.gameOver =
+        true;
+
+    GameState.running =
+        false;
+
+    Bird.alive =
+        false;
+
+    Runtime.cameraShake =
+        1;
+
+    Runtime.flash =
+        .7;
+
+
+    createBurst(
+        Bird.x,
+        Bird.y,
+        "#ff4f8b",
+        30
+    );
+
+
+    playTone(
+        150,
+        .18,
+        "sawtooth",
+        .06
+    );
+
+
+    if(
+        GameState.score >
+        GameState.bestScore
+    ){
+
+        GameState.bestScore =
+            GameState.score;
+
+        showToast(
+            "NEW HIGH SCORE // " +
+            GameState.bestScore
+        );
+
+    }
+
+
+    saveGame();
+
+
+    setTimeout(
+        () => {
+
+            openGameOverModal();
+
+        },
+        450
+    );
+
+}
+
+
+/* =========================================================
+   GAME OVER MODAL
+========================================================= */
+
+function openGameOverModal(){
+
+    MODAL.title.textContent =
+        "RUN TERMINATED";
+
+    MODAL.text.textContent =
+        "SCORE: " +
+        GameState.score +
+        "  •  BEST: " +
+        GameState.bestScore +
+        "  •  COINS: " +
+        GameState.coins;
+
+    MODAL.close.textContent =
+        "BACK TO MENU";
+
+    MODAL.close.onclick =
+        () => {
+
+            MODAL.close.textContent =
+                "CLOSE";
+
+            MODAL.layer.classList.remove(
+                "active"
+            );
+
+            showScreen(
+                "menu"
+            );
+
+        };
+
+    MODAL.layer.classList.add(
+        "active"
+    );
+
+}
+
+
+/* =========================================================
+   INPUT
+========================================================= */
+
+function handleAction(){
+
+    if(
+        GameState.screen !==
+        "game"
+    ){
+        return;
+    }
+
+
+    if(
+        Runtime.gameOver
+    ){
+        return;
+    }
+
+
+    Bird.flap();
+
+}
+
+
+window.addEventListener(
+    "keydown",
+    event => {
+
+        if(
+            event.code ===
+            "Space" ||
+            event.code ===
+            "ArrowUp"
+        ){
+
+            event.preventDefault();
+
+            handleAction();
+        }
+
+    }
+);
+
+
+CANVAS.addEventListener(
+    "pointerdown",
+    event => {
+
+        event.preventDefault();
+
+        handleAction();
+
+    }
+);
+
+
+/* =========================================================
+   AUDIO ENGINE
+========================================================= */
+
+let audioContext =
+    null;
+
+
+function getAudioContext(){
+
+    if(
+        !GameState.sound
+    ){
+        return null;
+    }
+
+
+    if(
+        !audioContext
+    ){
+
+        const AudioCtx =
+            window.AudioContext ||
+            window.webkitAudioContext;
+
+        if(!AudioCtx){
+            return null;
+        }
+
+        audioContext =
+            new AudioCtx();
+    }
+
+
+    if(
+        audioContext.state ===
+        "suspended"
+    ){
+
+        audioContext.resume();
+    }
+
+
+    return audioContext;
+}
+
+
+function playTone(
+    frequency,
+    duration,
+    type = "sine",
+    volume = .04
+){
+
+    if(
+        !GameState.sound
+    ){
+        return;
+    }
+
+
+    const ctx =
+        getAudioContext();
+
+    if(!ctx){
+        return;
+    }
+
+
+    const oscillator =
+        ctx.createOscillator();
+
+    const gain =
+        ctx.createGain();
+
+
+    oscillator.type =
+        type;
+
+    oscillator.frequency
+        .setValueAtTime(
+            frequency,
+            ctx.currentTime
+        );
+
+
+    gain.gain
+        .setValueAtTime(
+            volume,
+            ctx.currentTime
+        );
+
+    gain.gain
+        .exponentialRampToValueAtTime(
+            .001,
+            ctx.currentTime +
+            duration
+        );
+
+
+    oscillator.connect(
+        gain
+    );
+
+    gain.connect(
+        ctx.destination
+    );
+
+
+    oscillator.start();
+
+    oscillator.stop(
+        ctx.currentTime +
+        duration
+    );
+}
+
+
+/* =========================================================
+   CURRENT SKIN
+========================================================= */
+
+const SKINS_PART_2 = {
+
+    classic:{
+
+        primary:
+            "#31e9ff",
+
+        secondary:
+            "#087ba5",
+            dark:
+            "#043447",
+
+        glow:
+            "#00d9ff"
+
+    }
+
+};
+
+
+function getCurrentSkin(){
+
+    return (
+        SKINS_PART_2[
+            GameState.selectedSkin
+        ] ||
+        SKINS_PART_2.classic
+    );
+
+}
+
+
+/* =========================================================
+   INITIALIZE ENGINE
+========================================================= */
+
+resizeCanvas();
+
+createStars();
+
+updateHUD();
+
+requestAnimationFrame(
+    gameLoop
+);
+
+
+/* =========================================================
+   DEBUG SHORTCUT
+========================================================= */
+
+window.HackerBird =
+    {
+
+        state:
+            GameState,
+
+        bird:
+            Bird,
+
+        pipes:
+            Pipes,
+
+        coins:
+            Coins,
+
+        particles:
+            Particles,
+
+        start:
+            startGame,
+
+        save:
+            saveGame
+
+    };
+
+</script>
+Genau 👍 Ihr habt **Teil 1 + Teil 2**, und jetzt kommt **Teil 3**.
+
+ Füge diesen kompletten Block **direkt nach deinem bisherigen Teil 2** ein, also **vor dem letzten `</body><script>
+/* HACKERBIRD // ROBUST FLIGHT INPUT */
+window.addEventListener("keydown", function(e){
+  if(e.code === "Space" || e.code === "ArrowUp"){
+    e.preventDefault();
+    if(typeof GameState !== "undefined" && typeof Runtime !== "undefined" && typeof Bird !== "undefined" && typeof GAME_CONFIG !== "undefined" && GameState.running && !Runtime.gameOver){
+      GameState.screen = "game";
+      Bird.velocityY = GAME_CONFIG.jumpForce;
+      Bird.alive = true;
+    }
+  }
+}, true);
+</script>
+</html>`**. Er ergänzt Shop, Skins, Missionen und Secret-Codes und verbindet alles mit deinem bisherigen System.
+
+<script>
+
+/* =========================================================
+   HACKERBIRD // SHOP + MISSIONS + SECRET SYSTEM
+   PART 3
+========================================================= */
+
+/* =========================================================
+   SKINS
+========================================================= */
+
+const SKINS = {
+
+    classic:{
+        name:"CYAN CORE",
+        description:"The original HackerBird system.",
+        price:0,
+
+        primary:"#31e9ff",
+        secondary:"#087ba5",
+        dark:"#043447",
+        glow:"#00d9ff"
+    },
+
+    neon:{
+        name:"NEON PINK",
+        description:"High-energy pink cyber skin.",
+        price:50,
+
+        primary:"#ff4fd8",
+        secondary:"#a31383",
+        dark:"#45072f",
+        glow:"#ff149d"
+    },
+
+    toxic:{
+        name:"TOXIC GREEN",
+        description:"Experimental radioactive flight system.",
+        price:100,
+
+        primary:"#39ff88",
+        secondary:"#079447",
+        dark:"#03351c",
+        glow:"#00ff73"
+    },
+
+    gold:{
+        name:"GOLDEN BYTE",
+        description:"Premium gold-class flight unit.",
+        price:200,
+
+        primary:"#ffe15a",
+        secondary:"#c58b00",
+        dark:"#4d3500",
+        glow:"#ffd000"
+    },
+
+    plasma:{
+        name:"PLASMA",
+        description:"Unstable high-voltage plasma core.",
+        price:350,
+
+        primary:"#9d6cff",
+        secondary:"#5720c9",
+        dark:"#1c0948",
+        glow:"#8d4dff"
+    },
+
+    cyber:{
+        name:"CYBER RED",
+        description:"Restricted combat-grade visual system.",
+        price:500,
+
+        primary:"#ff466d",
+        secondary:"#a30e31",
+        dark:"#410614",
+        glow:"#ff174f"
+    },
+
+    hackerbird:{
+        name:"HACKERBIRD",
+        description:"Secret HackerBird access bird. Unlocked by the HACKERBIRD code.",
+        price:0,
+
+        primary:"#42ff9d",
+        secondary:"#087a4a",
+        dark:"#042e1d",
+        glow:"#42ff9d"
+    }
+
+};
+
+/* =========================================================
+   UPDATE CURRENT SKIN
+========================================================= */
+
+function getCurrentSkin(){
+
+    return (
+        SKINS[
+            GameState.selectedSkin
+        ] ||
+        SKINS.classic
+    );
+
+}
+
+/* =========================================================
+   SHOP RENDER
+========================================================= */
+
+function renderShop(){
+
+    SHOP.grid.innerHTML = "";
+
+    Object.entries(
+        SKINS
+    ).forEach(
+        ([id, skin]) => {
+
+            const unlocked =
+                GameState.unlockedSkins
+                    .includes(id);
+
+            const selected =
+                GameState.selectedSkin === id;
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+            item.className =
+                "shopItem";
+
+            item.innerHTML = `
+
+                <div class="shopPreview">
+
+                    <div
+                        class="shopPreviewGlow"
+                        style="
+                            background:
+                            radial-gradient(
+                                circle,
+                                ${skin.glow}55,
+                                transparent 65%
+                            );
+                        "
+                    ></div>
+
+                    <div
+                        class="fakeBird"
+                        style="
+                            background:
+                                ${skin.primary};
+
+                            color:
+                                ${skin.glow};
+
+                            box-shadow:
+                                0 0 25px
+                                ${skin.glow};
+                        "
+                    ></div>
+
+                </div>
+
+                <div class="itemName">
+                    ${skin.name}
+                </div>
+
+                <div class="itemDescription">
+                    ${skin.description}
+                </div>
+
+                <button
+                    class="itemButton"
+                    data-skin="${id}"
+                >
+                    ${
+                        selected
+                            ? "✓ EQUIPPED"
+                            : unlocked
+                                ? "EQUIP"
+                                : "◉ " + skin.price + " COINS"
+                    }
+                </button>
+
+            `;
+
+            const button =
+                item.querySelector(
+                    ".itemButton"
+                );
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    handleSkinAction(
+                        id
+                    );
+
+                }
+            );
+
+            SHOP.grid.appendChild(
+                item
+            );
+
+        }
+    );
+
+    SHOP.coins.textContent =
+        GameState.coins;
+
+}
+
+/* =========================================================
+   SKIN ACTION
+========================================================= */
+
+function handleSkinAction(
+    skinId
+){
+
+    const skin =
+        SKINS[skinId];
+
+    if(!skin){
+        return;
+    }
+
+    const unlocked =
+        GameState.unlockedSkins
+            .includes(skinId);
+
+    if(unlocked){
+
+        GameState.selectedSkin =
+            skinId;
+
+        saveGame();
+
+        renderShop();
+
+        showToast(
+            "SKIN EQUIPPED // " +
+            skin.name
+        );
+
+        return;
+    }
+
+    if(
+        GameState.coins <
+        skin.price
+    ){
+
+        showToast(
+            "NOT ENOUGH COINS // " +
+            skin.price +
+            " REQUIRED"
+        );
+
+        return;
+    }
+
+    GameState.coins -=
+        skin.price;
+
+    GameState.unlockedSkins.push(
+        skinId
+    );
+
+    GameState.selectedSkin =
+        skinId;
+
+    saveGame();
+
+    updateHUD();
+
+    renderShop();
+
+    createPurchaseSound();
+
+    showToast(
+        "SKIN UNLOCKED // " +
+        skin.name
+    );
+
+}
+
+/* =========================================================
+   PURCHASE SOUND
+========================================================= */
+
+function createPurchaseSound(){
+
+    playTone(
+        660,
+        .07,
+        "sine",
+        .04
+    );
+
+    setTimeout(
+        () => {
+
+            playTone(
+                990,
+                .12,
+                "sine",
+                .035
+            );
+
+        },
+        70
+    );
+
+}
+
+/* =========================================================
+   MISSIONS
+========================================================= */
+
+const MISSIONS = [
+
+    {
+        id:"first_flight",
+
+        name:"FIRST FLIGHT",
+
+        description:
+            "Complete your first flight.",
+
+        requirement:
+            1,
+
+        rewardXP:
+            25,
+
+        rewardCoins:
+            10,
+
+        get progress(){
+            return Math.min(
+                1,
+                GameState.totalFlights
+            );
+        }
+    },
+
+    {
+        id:"gate_runner",
+
+        name:"GATE RUNNER",
+
+        description:
+            "Pass through 10 gates.",
+
+        requirement:
+            10,
+
+        rewardXP:
+            50,
+
+        rewardCoins:
+            25,
+
+        get progress(){
+            return Math.min(
+                10,
+                GameState.totalGates
+            );
+        }
+    },
+
+    {
+        id:"coin_hunter",
+
+        name:"COIN HUNTER",
+
+        description:
+            "Collect 25 coins.",
+
+        requirement:
+            25,
+
+        rewardXP:
+            75,
+
+        rewardCoins:
+            50,
+
+        get progress(){
+            return Math.min(
+                25,
+                GameState.totalCoins
+            );
+        }
+    },
+
+    {
+        id:"score_50",
+
+        name:"SYSTEM BREAKER",
+
+        description:
+            "Reach a score of 50 in one run.",
+
+        requirement:
+            50,
+
+        rewardXP:
+            100,
+
+        rewardCoins:
+            75,
+
+        get progress(){
+            return Math.min(
+                50,
+                GameState.bestScore
+            );
+        }
+    },
+
+    {
+        id:"score_100",
+
+        name:"NEON MASTER",
+
+        description:
+            "Reach a score of 100 in one run.",
+
+        requirement:
+            100,
+
+        rewardXP:
+            200,
+
+        rewardCoins:
+            150,
+
+        get progress(){
+            return Math.min(
+                100,
+                GameState.bestScore
+            );
+        }
+    },
+
+    {
+        id:"collector",
+
+        name:"DIGITAL COLLECTOR",
+
+        description:
+            "Collect 100 coins.",
+
+        requirement:
+            100,
+
+        rewardXP:
+            250,
+
+        rewardCoins:
+            250,
+
+        get progress(){
+            return Math.min(
+                100,
+                GameState.totalCoins
+            );
+        }
+    }
+
+];
+
+/* =========================================================
+   MISSION RENDER
+========================================================= */
+
+function renderMissions(){
+
+    const grid =
+        document.getElementById(
+            "missionsGrid"
+        );
+
+    grid.innerHTML = "";
+
+    MISSIONS.forEach(
+        mission => {
+
+            const completed =
+                GameState.completedMissions
+                    .includes(
+                        mission.id
+                    );
+
+            const progress =
+                mission.progress;
+
+            const percentage =
+                Math.min(
+                    100,
+                    (
+                        progress /
+                        mission.requirement
+                    ) * 100
+                );
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+            item.className =
+                "shopItem";
+
+            item.innerHTML = `
+
+                <div
+                    style="
+                        display:flex;
+                        align-items:center;
+                        justify-content:space-between;
+                        gap:10px;
+                    "
+                >
+
+                    <div class="itemName">
+                        ${mission.name}
+                    </div>
+
+                    <div
+                        style="
+                            color:
+                            ${
+                                completed
+                                    ? "#42ff9d"
+                                    : "#607789"
+                            };
+
+                            font-size:9px;
+
+                            font-weight:900;
+
+                            letter-spacing:1px;
+                        "
+                    >
+                        ${
+                            completed
+                                ? "COMPLETED"
+                                : "ACTIVE"
+                        }
+                    </div>
+
+                </div>
+
+                <div class="itemDescription">
+                    ${mission.description}
+                </div>
+
+                <div
+                    style="
+                        margin-top:15px;
+                        color:#607789;
+                        font-size:9px;
+                        font-weight:900;
+                        display:flex;
+                        justify-content:space-between;
+                    "
+                >
+
+                    <span>
+                        PROGRESS
+                    </span>
+
+                    <span>
+                        ${progress}
+                        /
+                        ${mission.requirement}
+                    </span>
+
+                </div>
+
+                <div
+                    style="
+                        margin-top:5px;
+                        height:6px;
+                        border-radius:10px;
+                        overflow:hidden;
+                        background:
+                            rgba(255,255,255,.06);
+                    "
+                >
+
+                    <div
+                        style="
+                            width:${percentage}%;
+                            height:100%;
+                            border-radius:10px;
+                            background:
+                                linear-gradient(
+                                    90deg,
+                                    #00d9ff,
+                                    #8d4dff,
+                                    #ff4fd8
+                                );
+
+                            box-shadow:
+                                0 0 12px
+                                rgba(0,220,255,.45);
+                        "
+                    ></div>
+
+                </div>
+
+                <div
+                    style="
+                        margin-top:13px;
+                        color:#879dac;
+                        font-size:9px;
+                        line-height:1.6;
+                    "
+                >
+
+                    REWARD:
+                    <span
+                        style="color:#42ff9d"
+                    >
+                        +${mission.rewardXP} XP
+                    </span>
+
+                    &nbsp; //
+
+                    <span
+                        style="color:#ffd84d"
+                    >
+                        +${mission.rewardCoins} COINS
+                    </span>
+
+                </div>
+
+                <button
+                    class="itemButton"
+                    data-mission="${mission.id}"
+                    ${
+                        completed
+                            ? "disabled"
+                            : ""
+                    }
+                >
+                    ${
+                        completed
+                            ? "✓ CLAIMED"
+                            : progress >=
+                              mission.requirement
+                                ? "CLAIM REWARD"
+                                : "IN PROGRESS"
+                    }
+                </button>
+
+            `;
+
+            const button =
+                item.querySelector(
+                    ".itemButton"
+                );
+
+            if(
+                !completed &&
+                progress >=
+                mission.requirement
+            ){
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        claimMission(
+                            mission.id
+                        );
+
+                    }
+                );
+
+            }
+
+            grid.appendChild(
+                item
+            );
+
+        }
+    );
+
+}
+
+/* =========================================================
+   CLAIM MISSION
+========================================================= */
+
+function claimMission(
+    missionId
+){
+
+    const mission =
+        MISSIONS.find(
+            item =>
+                item.id ===
+                missionId
+        );
+
+    if(!mission){
+        return;
+    }
+
+    if(
+        GameState.completedMissions
+            .includes(missionId)
+    ){
+
+        return;
+    }
+
+    if(
+        mission.progress <
+        mission.requirement
+    ){
+
+        return;
+    }
+
+    GameState.completedMissions.push(
+        missionId
+    );
+
+    GameState.coins +=
+        mission.rewardCoins;
+
+    addXP(
+        mission.rewardXP
+    );
+
+    saveGame();
+
+    updateHUD();
+
+    renderMissions();
+
+    showToast(
+        "MISSION COMPLETE // " +
+        mission.name
+    );
+
+    playTone(
+        620,
+        .08,
+        "square",
+        .035
+    );
+
+    setTimeout(
+        () => {
+
+            playTone(
+                920,
+                .12,
+                "square",
+                .035
+            );
+
+        },
+        80
+    );
+
+}
+
+/* =========================================================
+   SECRET CODES
+========================================================= */
+
+const SECRET_CODES = {
+
+    "HACKERBIRD":{
+        coins:0,
+        xp:250,
+        unlockSkin:"hackerbird",
+        message:"HACKERBIRD UNLOCKED // SPECIAL BIRD ONLINE"
+    },
+
+    "NEON2026":{coins:100,xp:50,message:"ACCESS GRANTED // +100 COINS // +50 XP"},
+    "CYBERCORE":{coins:500,xp:250,message:"CORE ACCESS // +500 COINS // +250 XP"},
+    "FREEBIRD":{coins:75,xp:25,message:"FREE FLIGHT // +75 COINS // +25 XP"},
+    "BYTEBOOST":{coins:150,xp:75,message:"BYTE BOOST // +150 COINS // +75 XP"},
+    "NEONBIRD":{coins:200,xp:100,message:"NEON FLIGHT // +200 COINS // +100 XP"},
+    "CYBERWING":{coins:225,xp:110,message:"CYBER WING // +225 COINS // +110 XP"},
+    "DATARAID":{coins:250,xp:125,message:"DATA RAID // +250 COINS // +125 XP"},
+    "PIXELFLY":{coins:275,xp:135,message:"PIXEL FLY // +275 COINS // +135 XP"},
+    "CODEBIRD":{coins:300,xp:150,message:"CODE BIRD // +300 COINS // +150 XP"},
+    "GHOSTBYTE":{coins:325,xp:160,message:"GHOST BYTE // +325 COINS // +160 XP"},
+    "NIGHTRUN":{coins:350,xp:175,message:"NIGHT RUN // +350 COINS // +175 XP"},
+    "GLITCHFLY":{coins:375,xp:185,message:"GLITCH FLY // +375 COINS // +185 XP"},
+    "QUANTUM":{coins:400,xp:200,message:"QUANTUM ACCESS // +400 COINS // +200 XP"},
+    "FIREWALL":{coins:425,xp:210,message:"FIREWALL BYPASS // +425 COINS // +210 XP"},
+    "ROOTACCESS":{coins:450,xp:225,message:"ROOT ACCESS // +450 COINS // +225 XP"},
+    "DATACORE":{coins:475,xp:235,message:"DATA CORE // +475 COINS // +235 XP"},
+    "CYBERPULSE":{coins:525,xp:260,message:"CYBER PULSE // +525 COINS // +260 XP"},
+    "NEONCORE":{coins:550,xp:275,message:"NEON CORE // +550 COINS // +275 XP"},
+    "BIRDMODE":{coins:575,xp:285,message:"BIRD MODE // +575 COINS // +285 XP"},
+    "HYPERBYTE":{coins:600,xp:300,message:"HYPER BYTE // +600 COINS // +300 XP"},
+    "SKYHACK":{coins:625,xp:310,message:"SKY HACK // +625 COINS // +310 XP"},
+    "CODESTORM":{coins:650,xp:325,message:"CODE STORM // +650 COINS // +325 XP"},
+    "MEGABIRD":{coins:675,xp:335,message:"MEGA BIRD // +675 COINS // +335 XP"},
+    "ULTRACORE":{coins:700,xp:350,message:"ULTRA CORE // +700 COINS // +350 XP"},
+    "DIGITALFLY":{coins:725,xp:360,message:"DIGITAL FLY // +725 COINS // +360 XP"},
+    "SYSTEM42":{coins:750,xp:375,message:"SYSTEM 42 // +750 COINS // +375 XP"},
+    "MASTERBYTE":{coins:800,xp:400,message:"MASTER BYTE // +800 COINS // +400 XP"},
+    "FINALHACK":{coins:900,xp:450,message:"FINAL HACK // +900 COINS // +450 XP"},
+    "SECRETWING":{coins:1000,xp:500,message:"SECRET WING // +1000 COINS // +500 XP"}
+};
+
+/* =========================================================
+   SECRET CODE REDEEM
+========================================================= */
+
+SHOP.redeem.addEventListener(
+    "click",
+    redeemSecretCode
+);
+
+SHOP.input.addEventListener(
+    "keydown",
+    event => {
+
+        if(
+            event.key ===
+            "Enter"
+        ){
+
+            event.preventDefault();
+
+            redeemSecretCode();
+
+        }
+
+    }
+);
+
+function redeemSecretCode(){
+
+    const code =
+        SHOP.input.value
+            .trim()
+            .toUpperCase();
+
+    if(!code){
+
+        SHOP.message.textContent =
+            "ERROR // ENTER ACCESS CODE";
+
+        SHOP.message.style.color =
+            "#ff5577";
+
+        return;
+    }
+
+    if(
+        GameState.discoveredCodes
+            .includes(code)
+    ){
+
+        SHOP.message.textContent =
+            "ERROR // CODE ALREADY USED";
+
+        SHOP.message.style.color =
+            "#ff5577";
+
+        return;
+    }
+
+    const reward =
+        SECRET_CODES[code];
+
+    if(!reward){
+
+        SHOP.message.textContent =
+            "ACCESS DENIED // INVALID CODE";
+
+        SHOP.message.style.color =
+            "#ff5577";
+
+        playTone(
+            120,
+            .12,
+            "sawtooth",
+            .025
+        );
+
+        return;
+    }
+
+    GameState.discoveredCodes.push(
+        code
+    );
+
+    if(reward.unlockSkin && SKINS[reward.unlockSkin]){
+        if(!GameState.unlockedSkins.includes(reward.unlockSkin)){
+            GameState.unlockedSkins.push(reward.unlockSkin);
+        }
+        GameState.selectedSkin = reward.unlockSkin;
+    }
+
+    GameState.coins +=
+        reward.coins;
+
+    addXP(
+        reward.xp
+    );
+
+    saveGame();
+
+    updateHUD();
+
+    SHOP.input.value =
+        "";
+
+    SHOP.message.textContent =
+        reward.message;
+
+    SHOP.message.style.color =
+        "#42ff9d";
+
+    showToast(
+        "SECRET CODE ACCEPTED"
+    );
+
+    createBurst(
+        canvasWidth / 2,
+        canvasHeight / 2,
+        "#42ff9d",
+        25
+    );
+
+    playTone(
+        700,
+        .08,
+        "square",
+        .04
+    );
+
+    setTimeout(
+        () => {
+
+            playTone(
+                1100,
+                .12,
+                "square",
+                .04
+            );
+
+        },
+        90
+    );
+
+}
+
+/* =========================================================
+   FLIGHT COUNTER
+========================================================= */
+
+const originalStartGame =
+    startGame;
+
+startGame =
+    function(){
+
+        GameState.totalFlights++;
+
+        saveGame();
+
+        originalStartGame();
+
+    };
+
+/* =========================================================
+   MISSION CHECK AFTER GAME OVER
+========================================================= */
+
+const originalEndGame =
+    endGame;
+
+endGame =
+    function(){
+
+        originalEndGame();
+
+        setTimeout(
+            () => {
+
+                renderMissions();
+
+            },
+            600
+        );
+
+    };
+
+/* =========================================================
+   MISSION CHECK AFTER SCORE
+========================================================= */
+
+const originalScoreGate =
+    scoreGate;
+
+scoreGate =
+    function(){
+
+        originalScoreGate();
+
+        if(
+            GameState.screen ===
+            "missions"
+        ){
+
+            renderMissions();
+
+        }
+
+    };
+
+/* =========================================================
+   SAVE VALIDATION
+========================================================= */
+
+function validateSaveData(){
+
+    if(
+        !Array.isArray(
+            GameState.unlockedSkins
+        )
+    ){
+
+        GameState.unlockedSkins =
+            ["classic"];
+    }
+
+    if(
+        !GameState.unlockedSkins
+            .includes("classic")
+    ){
+
+        GameState.unlockedSkins.unshift(
+            "classic"
+        );
+    }
+
+    if(
+        !Array.isArray(
+            GameState.completedMissions
+        )
+    ){
+
+        GameState.completedMissions =
+            [];
+    }
+
+    if(
+        !Array.isArray(
+            GameState.discoveredCodes
+        )
+    ){
+
+        GameState.discoveredCodes =
+            [];
+    }
+
+    if(
+        !SKINS[
+            GameState.selectedSkin
+        ]
+    ){
+
+        GameState.selectedSkin =
+            "classic";
+    }
+
+}
+
+/* =========================================================
+   RUN SAVE VALIDATION
+========================================================= */
+
+validateSaveData();
+
+saveGame();
+
+/* =========================================================
+   DEBUG EXTENSION
+========================================================= */
+
+window.HackerBird.shop =
+    SKINS;
+
+window.HackerBird.missions =
+    MISSIONS;
+
+window.HackerBird.codes =
+    SECRET_CODES;
+
+/* =========================================================
+   PART 3 ONLINE
+========================================================= */
+
+console.log(
+    "%cHACKERBIRD PART 3 ONLINE",
+    "color:#42ff9d;font-weight:bold;font-size:14px"
+);
+
+console.log(
+    "%cSHOP // MISSIONS // SECRET ACCESS",
+    "color:#ff4fd8;font-weight:bold"
+);
+
+</script>
+</body>
+</html>
+<script>
+
+/* =========================================================
+   HACKERBIRD // GAMEPLAY POLISH
+   PART 4
+========================================================= */
+
+
+/* =========================================================
+   PART 4 STATE
+========================================================= */
+
+const Part4 = {
+
+    paused:false,
+
+    countdown:false,
+
+    countdownValue:0,
+
+    countdownTimer:null,
+
+    pauseButton:null,
+
+    overlay:null,
+
+    stats:null,
+
+    bestAtRunStart:0,
+
+    runCoins:0,
+
+    runGates:0,
+
+    runStartTime:0
+
+};
+
+
+/* =========================================================
+   CREATE GAME UI
+========================================================= */
+
+function createPart4UI(){
+
+    /* -----------------------------------------------------
+       PAUSE BUTTON
+    ----------------------------------------------------- */
+
+    const button =
+        document.createElement("button");
+
+    button.id =
+        "part4PauseButton";
+
+    button.innerHTML =
+        "Ⅱ";
+
+    button.setAttribute(
+        "aria-label",
+        "Pause"
+    );
+
+    button.style.cssText = `
+        position:fixed;
+        top:14px;
+        right:14px;
+        z-index:60;
+
+        width:39px;
+        height:39px;
+
+        border:1px solid rgba(0,220,255,.2);
+        border-radius:11px;
+
+        background:rgba(3,10,19,.78);
+        color:#d9f7ff;
+
+        font-size:17px;
+        font-weight:900;
+
+        cursor:pointer;
+
+        backdrop-filter:blur(14px);
+
+        display:none;
+
+        box-shadow:
+            0 8px 25px rgba(0,0,0,.2);
+    `;
+
+    button.addEventListener(
+        "pointerdown",
+        event => {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            togglePause();
+
+        }
+    );
+
+    APP.appendChild(
+        button
+    );
+
+    Part4.pauseButton =
+        button;
+
+
+    /* -----------------------------------------------------
+       OVERLAY
+    ----------------------------------------------------- */
+
+    const overlay =
+        document.createElement("div");
+
+    overlay.id =
+        "part4Overlay";
+
+    overlay.style.cssText = `
+        position:absolute;
+        inset:0;
+
+        z-index:90;
+
+        display:none;
+
+        align-items:center;
+        justify-content:center;
+
+        padding:20px;
+
+        background:
+            rgba(0,4,10,.58);
+
+        backdrop-filter:blur(8px);
+    `;
+
+
+    const panel =
+        document.createElement("div");
+
+    panel.style.cssText = `
+        width:min(430px,100%);
+        padding:28px;
+
+        border:1px solid rgba(0,220,255,.25);
+        border-radius:22px;
+
+        background:
+            linear-gradient(
+                145deg,
+                rgba(8,20,35,.97),
+                rgba(2,6,13,.98)
+            );
+
+        box-shadow:
+            0 30px 100px rgba(0,0,0,.55);
+
+        text-align:center;
+    `;
+
+
+    const title =
+        document.createElement("div");
+
+    title.id =
+        "part4OverlayTitle";
+
+    title.style.cssText = `
+        color:#53ecff;
+
+        font-size:28px;
+        font-weight:1000;
+
+        letter-spacing:3px;
+
+        text-shadow:
+            0 0 20px rgba(0,220,255,.5);
+    `;
+
+    title.textContent =
+        "SYSTEM PAUSED";
+
+
+    const text =
+        document.createElement("div");
+
+    text.id =
+        "part4OverlayText";
+
+    text.style.cssText = `
+        margin-top:10px;
+
+        color:#718a9b;
+
+        font-size:11px;
+
+        line-height:1.7;
+
+        letter-spacing:1px;
+    `;
+
+    text.textContent =
+        "THE RUN IS CURRENTLY SUSPENDED.";
+
+
+    const resume =
+        document.createElement("button");
+
+    resume.className =
+        "menuButton primary";
+
+    resume.style.marginTop =
+        "20px";
+
+    resume.textContent =
+        "▶ RESUME";
+
+
+    resume.addEventListener(
+        "click",
+        () => {
+
+            resumeGame();
+
+        }
+    );
+
+
+    const restart =
+        document.createElement("button");
+
+    restart.className =
+        "menuButton";
+
+    restart.textContent =
+        "↻ RESTART";
+
+
+    restart.addEventListener(
+        "click",
+        () => {
+
+            hidePart4Overlay();
+
+            startGame();
+
+        }
+    );
+
+
+    const menu =
+        document.createElement("button");
+
+    menu.className =
+        "menuButton danger";
+
+    menu.textContent =
+        "← MAIN MENU";
+
+
+    menu.addEventListener(
+        "click",
+        () => {
+
+            Part4.paused =
+                false;
+
+            GameState.paused =
+                false;
+
+            hidePart4Overlay();
+
+            showScreen(
+                "menu"
+            );
+
+        }
+    );
+
+
+    panel.appendChild(
+        title
+    );
+
+    panel.appendChild(
+        text
+    );
+
+    panel.appendChild(
+        resume
+    );
+
+    panel.appendChild(
+        restart
+    );
+
+    panel.appendChild(
+        menu
+    );
+
+    overlay.appendChild(
+        panel
+    );
+
+    APP.appendChild(
+        overlay
+    );
+
+    Part4.overlay =
+        overlay;
+
+
+    /* -----------------------------------------------------
+       COUNTDOWN
+    ----------------------------------------------------- */
+
+    const countdown =
+        document.createElement("div");
+
+    countdown.id =
+        "part4Countdown";
+
+    countdown.style.cssText = `
+        position:absolute;
+        inset:0;
+
+        z-index:80;
+
+        display:none;
+
+        align-items:center;
+        justify-content:center;
+
+        pointer-events:none;
+
+        color:#53ecff;
+
+        font-size:
+            clamp(70px,15vw,150px);
+
+        font-weight:1000;
+
+        text-shadow:
+            0 0 15px #00d9ff,
+            0 0 50px #008cff,
+            0 0 100px rgba(0,220,255,.5);
+    `;
+
+    APP.appendChild(
+        countdown
+    );
+
+    Part4.countdown =
+        countdown;
+}
+
+
+/* =========================================================
+   SHOW / HIDE PAUSE BUTTON
+========================================================= */
+
+function updatePauseButton(){
+
+    if(
+        !Part4.pauseButton
+    ){
+        return;
+    }
+
+
+    const visible =
+        GameState.screen === "game" &&
+        GameState.running &&
+        !Runtime.gameOver;
+
+
+    Part4.pauseButton.style.display =
+        visible
+            ? "block"
+            : "none";
+
+
+    Part4.pauseButton.innerHTML =
+        Part4.paused
+            ? "▶"
+            : "Ⅱ";
+}
+
+
+/* =========================================================
+   PAUSE
+========================================================= */
+
+function pauseGame(){
+
+    if(
+        !GameState.running ||
+        Runtime.gameOver ||
+        Part4.countdown
+    ){
+        return;
+    }
+
+
+    Part4.paused =
+        true;
+
+    GameState.paused =
+        true;
+
+
+    showPart4Overlay();
+
+    updatePauseButton();
+}
+
+
+/* =========================================================
+   RESUME
+========================================================= */
+
+function resumeGame(){
+
+    if(
+        !Part4.paused
+    ){
+        return;
+    }
+
+
+    hidePart4Overlay();
+
+
+    Part4.countdown =
+        true;
+
+    GameState.paused =
+        true;
+
+
+    runCountdown(
+        () => {
+
+            Part4.paused =
+                false;
+
+            Part4.countdown =
+                false;
+
+            GameState.paused =
+                false;
+
+            Runtime.lastTime =
+                performance.now();
+
+            updatePauseButton();
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   TOGGLE PAUSE
+========================================================= */
+
+function togglePause(){
+
+    if(
+        Part4.paused
+    ){
+
+        resumeGame();
+
+    }else{
+
+        pauseGame();
+
+    }
+
+}
+
+
+/* =========================================================
+   PAUSE OVERLAY
+========================================================= */
+
+function showPart4Overlay(){
+
+    if(
+        !Part4.overlay
+    ){
+        return;
+    }
+
+    Part4.overlay.style.display =
+        "flex";
+}
+
+
+function hidePart4Overlay(){
+
+    if(
+        !Part4.overlay
+    ){
+        return;
+    }
+
+    Part4.overlay.style.display =
+        "none";
+}
+
+
+/* =========================================================
+   COUNTDOWN
+========================================================= */
+
+function runCountdown(
+    callback
+){
+
+    clearInterval(
+        Part4.countdownTimer
+    );
+
+
+    let value =
+        3;
+
+
+    Part4.countdown.style.display =
+        "flex";
+
+
+    Part4.countdown.textContent =
+        value;
+
+
+    playTone(
+        440,
+        .08,
+        "square",
+        .025
+    );
+
+
+    Part4.countdownTimer =
+        setInterval(
+            () => {
+
+                value--;
+
+
+                if(
+                    value > 0
+                ){
+
+                    Part4.countdown.textContent =
+                        value;
+
+                    playTone(
+                        520 +
+                        value * 40,
+                        .08,
+                        "square",
+                        .025
+                    );
+
+                    return;
+                }
+
+
+                if(
+                    value === 0
+                ){
+
+                    Part4.countdown.textContent =
+                        "GO!";
+
+                    playTone(
+                        880,
+                        .12,
+                        "sine",
+                        .035
+                    );
+
+                    return;
+                }
+
+
+                clearInterval(
+                    Part4.countdownTimer
+                );
+
+
+                Part4.countdown.style.display =
+                    "none";
+
+
+                if(
+                    typeof callback ===
+                    "function"
+                ){
+
+                    callback();
+
+                }
+
+            },
+            700
+        );
+
+}
+
+
+/* =========================================================
+   RUN STATISTICS
+========================================================= */
+
+function resetRunStatistics(){
+
+    Part4.bestAtRunStart =
+        GameState.bestScore;
+
+    Part4.runCoins =
+        0;
+
+    Part4.runGates =
+        0;
+
+    Part4.runStartTime =
+        performance.now();
+
+}
+
+
+/* =========================================================
+   TRACK COINS
+========================================================= */
+
+const part4OriginalCollectCoin =
+    collectCoin;
+
+
+collectCoin =
+    function(
+        coin,
+        index
+    ){
+
+        const before =
+            GameState.totalCoins;
+
+
+        part4OriginalCollectCoin(
+            coin,
+            index
+        );
+
+
+        if(
+            GameState.totalCoins >
+            before
+        ){
+
+            Part4.runCoins++;
+
+        }
+
+    };
+
+
+/* =========================================================
+   TRACK GATES
+========================================================= */
+
+const part4OriginalScoreGate =
+    scoreGate;
+
+
+scoreGate =
+    function(){
+
+        const before =
+            GameState.totalGates;
+
+
+        part4OriginalScoreGate();
+
+
+        if(
+            GameState.totalGates >
+            before
+        ){
+
+            Part4.runGates++;
+
+        }
+
+    };
+
+
+/* =========================================================
+   ENHANCED START GAME
+========================================================= */
+
+const part4OriginalStartGame =
+    startGame;
+
+
+startGame =
+    function(){
+
+        Part4.paused =
+            false;
+
+        Part4.countdown =
+            false;
+
+        GameState.paused =
+            false;
+
+
+        resetRunStatistics();
+
+
+        hidePart4Overlay();
+
+
+        if(
+            Part4.countdown
+        ){
+
+            return;
+        }
+
+
+        part4OriginalStartGame();
+
+
+        updatePauseButton();
+
+
+        /* -------------------------------------------------
+           SHORT START COUNTDOWN
+        ------------------------------------------------- */
+
+        GameState.paused =
+            true;
+
+        Part4.countdown =
+            true;
+
+
+        runCountdown(
+            () => {
+
+                GameState.paused =
+                    false;
+
+                Part4.paused =
+                    false;
+
+                Part4.countdown =
+                    false;
+
+                Runtime.lastTime =
+                    performance.now();
+
+                updatePauseButton();
+
+            }
+        );
+
+    };
+
+
+/* =========================================================
+   UPDATE GAME OVERRIDE
+========================================================= */
+
+const part4OriginalUpdateGame =
+    updateGame;
+
+
+updateGame =
+    function(dt){
+
+        if(
+            Part4.paused ||
+            Part4.countdown ||
+            GameState.paused
+        ){
+
+            return;
+
+        }
+
+
+        part4OriginalUpdateGame(
+            dt
+        );
+
+    };
+
+
+/* =========================================================
+   GAME OVER STATISTICS
+========================================================= */
+
+function getRunDuration(){
+
+    if(
+        !Part4.runStartTime
+    ){
+        return 0;
+    }
+
+
+    return Math.max(
+        0,
+        (
+            performance.now() -
+            Part4.runStartTime
+        ) / 1000
+    );
+
+}
+
+
+/* =========================================================
+   ENHANCED GAME OVER
+========================================================= */
+
+const part4OriginalOpenGameOver =
+    openGameOverModal;
+
+
+openGameOverModal =
+    function(){
+
+        const duration =
+            getRunDuration();
+
+
+        const seconds =
+            Math.floor(
+                duration
+            );
+
+
+        const minutes =
+            Math.floor(
+                seconds / 60
+            );
+
+        const remaining =
+            seconds % 60;
+
+
+        const timeText =
+            String(minutes)
+                .padStart(2,"0")
+            +
+            ":"
+            +
+            String(remaining)
+                .padStart(2,"0");
+
+
+        MODAL.title.textContent =
+            "RUN TERMINATED";
+
+
+        MODAL.text.innerHTML = `
+            <div
+                style="
+                    display:grid;
+                    grid-template-columns:1fr 1fr;
+                    gap:9px;
+                    margin-top:14px;
+                "
+            >
+
+                <div
+                    style="
+                        padding:12px;
+                        border:1px solid rgba(0,220,255,.12);
+                        border-radius:12px;
+                        background:rgba(0,220,255,.03);
+                    "
+                >
+                    <div
+                        style="
+                            color:#607789;
+                            font-size:8px;
+                            letter-spacing:1.5px;
+                            font-weight:900;
+                        "
+                    >
+                        SCORE
+                    </div>
+
+                    <div
+                        style="
+                            margin-top:3px;
+                            color:#49eaff;
+                            font-size:22px;
+                            font-weight:1000;
+                        "
+                    >
+                        ${GameState.score}
+                    </div>
+                </div>
+
+
+                <div
+                    style="
+                        padding:12px;
+                        border:1px solid rgba(255,216,90,.12);
+                        border-radius:12px;
+                        background:rgba(255,216,90,.03);
+                    "
+                >
+                    <div
+                        style="
+                            color:#607789;
+                            font-size:8px;
+                            letter-spacing:1.5px;
+                            font-weight:900;
+                        "
+                    >
+                        BEST
+                    </div>
+
+                    <div
+                        style="
+                            margin-top:3px;
+                            color:#ffd85a;
+                            font-size:22px;
+                            font-weight:1000;
+                        "
+                    >
+                        ${GameState.bestScore}
+                    </div>
+                </div>
+
+
+                <div
+                    style="
+                        padding:12px;
+                        border:1px solid rgba(255,79,216,.12);
+                        border-radius:12px;
+                        background:rgba(255,79,216,.03);
+                    "
+                >
+                    <div
+                        style="
+                            color:#607789;
+                            font-size:8px;
+                            letter-spacing:1.5px;
+                            font-weight:900;
+                        "
+                    >
+                        GATES
+                    </div>
+
+                    <div
+                        style="
+                            margin-top:3px;
+                            color:#ff68dc;
+                            font-size:22px;
+                            font-weight:1000;
+                        "
+                    >
+                        ${Part4.runGates}
+                    </div>
+                </div>
+
+
+                <div
+                    style="
+                        padding:12px;
+                        border:1px solid rgba(66,255,157,.12);
+                        border-radius:12px;
+                        background:rgba(66,255,157,.03);
+                    "
+                >
+                    <div
+                        style="
+                            color:#607789;
+                            font-size:8px;
+                            letter-spacing:1.5px;
+                            font-weight:900;
+                        "
+                    >
+                        COINS
+                    </div>
+
+                    <div
+                        style="
+                            margin-top:3px;
+                            color:#42ff9d;
+                            font-size:22px;
+                            font-weight:1000;
+                        "
+                    >
+                        ${Part4.runCoins}
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div
+                style="
+                    margin-top:13px;
+                    color:#526d7d;
+                    font-family:monospace;
+                    font-size:9px;
+                    letter-spacing:1px;
+                    text-align:center;
+                "
+            >
+                RUN TIME ${timeText}
+            </div>
+        `;
+
+
+        MODAL.close.textContent =
+            "BACK TO MENU";
+
+
+        MODAL.close.onclick =
+            () => {
+
+                MODAL.close.textContent =
+                    "CLOSE";
+
+
+                MODAL.layer.classList.remove(
+                    "active"
+                );
+
+
+                showScreen(
+                    "menu"
+                );
+
+
+                updatePauseButton();
+
+            };
+
+
+        const oldRestart =
+            document.getElementById(
+                "part4RestartButton"
+            );
+
+
+        if(oldRestart){
+            oldRestart.remove();
+        }
+
+
+        const restart =
+            document.createElement(
+                "button"
+            );
+
+        restart.id =
+            "part4RestartButton";
+
+        restart.className =
+            "menuButton primary";
+
+        restart.textContent =
+            "↻ PLAY AGAIN";
+
+
+        restart.style.marginTop =
+            "8px";
+
+
+        restart.addEventListener(
+            "click",
+            () => {
+
+                MODAL.layer.classList.remove(
+                    "active"
+                );
+
+                MODAL.close.textContent =
+                    "CLOSE";
+
+                startGame();
+
+            }
+        );
+
+
+        MODAL.close.parentElement.insertBefore(
+            restart,
+            MODAL.close
+        );
+
+
+        MODAL.layer.classList.add(
+            "active"
+        );
+
+    };
+
+
+/* =========================================================
+   GAME OVER CLEANUP
+========================================================= */
+
+const part4OriginalEndGame =
+    endGame;
+
+
+endGame =
+    function(){
+
+        Part4.paused =
+            false;
+
+        Part4.countdown =
+            false;
+
+        GameState.paused =
+            false;
+
+
+        clearInterval(
+            Part4.countdownTimer
+        );
+
+
+        if(
+            Part4.countdown
+        ){
+
+            Part4.countdown.style.display =
+                "none";
+        }
+
+
+        hidePart4Overlay();
+
+
+        part4OriginalEndGame();
+
+
+        updatePauseButton();
+
+    };
+
+
+/* =========================================================
+   SCREEN NAVIGATION HOOK
+========================================================= */
+
+const part4OriginalShowScreen =
+    showScreen;
+
+
+showScreen =
+    function(name){
+
+        part4OriginalShowScreen(
+            name
+        );
+
+
+        if(
+            name !== "game"
+        ){
+
+            Part4.paused =
+                false;
+
+            GameState.paused =
+                false;
+
+            hidePart4Overlay();
+
+        }
+
+
+        updatePauseButton();
+
+    };
+
+
+/* =========================================================
+   ESCAPE KEY
+========================================================= */
+
+window.addEventListener(
+    "keydown",
+    event => {
+
+        if(
+            event.code !==
+            "Escape"
+        ){
+            return;
+        }
+
+
+        if(
+            GameState.screen !==
+            "game"
+        ){
+            return;
+        }
+
+
+        if(
+            Runtime.gameOver
+        ){
+            return;
+        }
+
+
+        event.preventDefault();
+
+        togglePause();
+
+    }
+);
+
+
+/* =========================================================
+   VISIBILITY CHANGE
+========================================================= */
+
+document.addEventListener(
+    "visibilitychange",
+    () => {
+
+        if(
+            document.hidden &&
+            GameState.screen === "game" &&
+            GameState.running &&
+            !Runtime.gameOver
+        ){
+
+            pauseGame();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   MOBILE SWIPE PREVENTION
+========================================================= */
+
+CANVAS.addEventListener(
+    "touchmove",
+    event => {
+
+        event.preventDefault();
+
+    },
+    {
+        passive:false
+    }
+);
+
+
+/* =========================================================
+   CREATE UI
+========================================================= */
+
+createPart4UI();
+
+
+/* =========================================================
+   FINAL UI SYNC
+========================================================= */
+
+updatePauseButton();
+
+
+/* =========================================================
+   PART 4 ONLINE
+========================================================= */
+
+console.log(
+    "%cHACKERBIRD PART 4 ONLINE",
+    "color:#53ecff;font-weight:bold;font-size:14px"
+);
+
+console.log(
+    "%cPAUSE // RESTART // COUNTDOWN // RUN STATS",
+    "color:#ff4fd8;font-weight:bold"
+);
+
+</script>
+<script>
+
+/* =========================================================
+   HACKERBIRD // ACHIEVEMENTS + DAILY CHALLENGE
+   PART 5
+========================================================= */
+
+
+/* =========================================================
+   PART 5 STATE
+========================================================= */
+
+const Part5 = {
+
+    comboTimer: 0,
+
+    maxCombo: 1,
+
+    scoreFlash: 0,
+
+    dailyCompleted: false,
+
+    achievementToastTimer: null
+
+};
+
+
+/* =========================================================
+   ACHIEVEMENTS
+========================================================= */
+
+const ACHIEVEMENTS = [
+
+    {
+        id:"first_score",
+
+        name:"FIRST SIGNAL",
+
+        description:
+            "Score your first point.",
+
+        reward:15,
+
+        check(){
+            return GameState.bestScore >= 1;
+        }
+    },
+
+    {
+        id:"score_25",
+
+        name:"DATA RUNNER",
+
+        description:
+            "Reach a score of 25.",
+
+        reward:30,
+
+        check(){
+            return GameState.bestScore >= 25;
+        }
+    },
+
+    {
+        id:"score_75",
+
+        name:"SYSTEM GHOST",
+
+        description:
+            "Reach a score of 75.",
+
+        reward:75,
+
+        check(){
+            return GameState.bestScore >= 75;
+        }
+    },
+
+    {
+        id:"coins_50",
+
+        name:"COIN PROTOCOL",
+
+        description:
+            "Collect 50 coins in total.",
+
+        reward:50,
+
+        check(){
+            return GameState.totalCoins >= 50;
+        }
+    },
+
+    {
+        id:"coins_250",
+
+        name:"TREASURE CORE",
+
+        description:
+            "Collect 250 coins in total.",
+
+        reward:125,
+
+        check(){
+            return GameState.totalCoins >= 250;
+        }
+    },
+
+    {
+        id:"games_10",
+
+        name:"VETERAN PILOT",
+
+        description:
+            "Complete 10 flights.",
+
+        reward:100,
+
+        check(){
+            return GameState.totalFlights >= 10;
+        }
+    }
+
+];
+
+
+/* =========================================================
+   ACHIEVEMENT VALIDATION
+========================================================= */
+
+function validateAchievementData(){
+
+    if(
+        !Array.isArray(
+            GameState.unlockedAchievements
+        )
+    ){
+
+        GameState.unlockedAchievements = [];
+
+    }
+
+}
+
+
+/* =========================================================
+   CHECK ACHIEVEMENTS
+========================================================= */
+
+function checkAchievements(){
+
+    validateAchievementData();
+
+    ACHIEVEMENTS.forEach(
+        achievement => {
+
+            if(
+                GameState.unlockedAchievements
+                    .includes(
+                        achievement.id
+                    )
+            ){
+                return;
+            }
+
+            if(
+                achievement.check()
+            ){
+
+                GameState.unlockedAchievements
+                    .push(
+                        achievement.id
+                    );
+
+                GameState.coins +=
+                    achievement.reward;
+
+                showAchievementToast(
+                    achievement
+                );
+
+            }
+
+        }
+    );
+
+    saveGame();
+
+    updateHUD();
+
+}
+
+
+/* =========================================================
+   ACHIEVEMENT TOAST
+========================================================= */
+
+function showAchievementToast(
+    achievement
+){
+
+    let toast =
+        document.getElementById(
+            "part5AchievementToast"
+        );
+
+    if(!toast){
+
+        toast =
+            document.createElement(
+                "div"
+            );
+
+        toast.id =
+            "part5AchievementToast";
+
+        toast.style.cssText = `
+            position:fixed;
+
+            left:50%;
+            top:22px;
+
+            transform:
+                translate(-50%,-140px);
+
+            z-index:999;
+
+            min-width:
+                min(340px,calc(100vw - 30px));
+
+            padding:14px 18px;
+
+            border:
+                1px solid
+                rgba(66,255,157,.35);
+
+            border-radius:15px;
+
+            background:
+                linear-gradient(
+                    135deg,
+                    rgba(5,25,25,.97),
+                    rgba(3,10,18,.97)
+                );
+
+            box-shadow:
+                0 15px 50px
+                rgba(0,0,0,.45),
+
+                0 0 25px
+                rgba(66,255,157,.12);
+
+            text-align:center;
+
+            pointer-events:none;
+
+            transition:
+                transform .35s ease;
+        `;
+
+        document.body.appendChild(
+            toast
+        );
+
+    }
+
+
+    toast.innerHTML = `
+
+        <div
+            style="
+                color:#42ff9d;
+                font-size:9px;
+                font-weight:1000;
+                letter-spacing:2px;
+            "
+        >
+            ACHIEVEMENT UNLOCKED
+        </div>
+
+        <div
+            style="
+                margin-top:5px;
+                color:#eafff4;
+                font-size:16px;
+                font-weight:1000;
+            "
+        >
+            ${achievement.name}
+        </div>
+
+        <div
+            style="
+                margin-top:3px;
+                color:#718a9b;
+                font-size:9px;
+            "
+        >
+            ${achievement.description}
+        </div>
+
+        <div
+            style="
+                margin-top:8px;
+                color:#ffd84d;
+                font-size:10px;
+                font-weight:900;
+            "
+        >
+            +${achievement.reward} COINS
+        </div>
+
+    `;
+
+
+    clearTimeout(
+        Part5.achievementToastTimer
+    );
+
+
+    requestAnimationFrame(
+        () => {
+
+            toast.style.transform =
+                "translate(-50%,0)";
+
+        }
+    );
+
+
+    Part5.achievementToastTimer =
+        setTimeout(
+            () => {
+
+                toast.style.transform =
+                    "translate(-50%,-140px)";
+
+            },
+            3200
+        );
+
+
+    playTone(
+        740,
+        .08,
+        "sine",
+        .035
+    );
+
+
+    setTimeout(
+        () => {
+
+            playTone(
+                1110,
+                .12,
+                "sine",
+                .035
+            );
+
+        },
+        90
+    );
+
+}
+
+
+/* =========================================================
+   DAILY CHALLENGE
+========================================================= */
+
+function getDailyChallenge(){
+
+    const challenges = [
+
+        {
+            id:"daily_score_20",
+
+            name:"DAILY DATA RUN",
+
+            description:
+                "Reach 20 points in one flight.",
+
+            target:20,
+
+            reward:35
+        },
+
+        {
+            id:"daily_coins_10",
+
+            name:"DAILY COIN RAID",
+
+            description:
+                "Collect 10 coins in one flight.",
+
+            target:10,
+
+            reward:40
+        },
+
+        {
+            id:"daily_gates_15",
+
+            name:"DAILY GATE RUN",
+
+            description:
+                "Pass 15 gates in one flight.",
+
+            target:15,
+
+            reward:50
+        }
+
+    ];
+
+
+    const date =
+        new Date();
+
+
+    const seed =
+        date.getFullYear() * 10000 +
+        (date.getMonth() + 1) * 100 +
+        date.getDate();
+
+
+    return challenges[
+        seed %
+        challenges.length
+    ];
+
+}
+
+
+/* =========================================================
+   DAILY STORAGE
+========================================================= */
+
+function getDailyStorage(){
+
+    const challenge =
+        getDailyChallenge();
+
+
+    const today =
+        new Date()
+            .toISOString()
+            .slice(0,10);
+
+
+    if(
+        GameState.dailyDate !==
+        today
+    ){
+
+        GameState.dailyDate =
+            today;
+
+        GameState.dailyCompleted =
+            false;
+
+        saveGame();
+
+    }
+
+
+    return challenge;
+
+}
+
+
+/* =========================================================
+   DAILY CHECK
+========================================================= */
+
+function checkDailyChallenge(){
+
+    const challenge =
+        getDailyStorage();
+
+
+    if(
+        GameState.dailyCompleted
+    ){
+        return;
+    }
+
+
+    if(
+        Part4.runGates >=
+        challenge.target &&
+        challenge.id ===
+        "daily_gates_15"
+    ){
+
+        completeDailyChallenge(
+            challenge
+        );
+
+        return;
+
+    }
+
+
+    if(
+        GameState.score >=
+        challenge.target &&
+        challenge.id ===
+        "daily_score_20"
+    ){
+
+        completeDailyChallenge(
+            challenge
+        );
+
+        return;
+
+    }
+
+
+    if(
+        Part4.runCoins >=
+        challenge.target &&
+        challenge.id ===
+        "daily_coins_10"
+    ){
+
+        completeDailyChallenge(
+            challenge
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   COMPLETE DAILY
+========================================================= */
+
+function completeDailyChallenge(
+    challenge
+){
+
+    if(
+        GameState.dailyCompleted
+    ){
+        return;
+    }
+
+
+    GameState.dailyCompleted =
+        true;
+
+
+    GameState.coins +=
+        challenge.reward;
+
+
+    saveGame();
+
+    updateHUD();
+
+
+    showToast(
+        "DAILY COMPLETE // +" +
+        challenge.reward +
+        " COINS"
+    );
+
+
+    createCoinBurst(
+        canvasWidth / 2,
+        canvasHeight / 2
+    );
+
+
+    playTone(
+        800,
+        .08,
+        "square",
+        .04
+    );
+
+
+    setTimeout(
+        () => {
+
+            playTone(
+                1200,
+                .14,
+                "square",
+                .04
+            );
+
+        },
+        90
+    );
+
+}
+
+
+/* =========================================================
+   DAILY UI
+========================================================= */
+
+function createDailyUI(){
+
+    const box =
+        document.createElement(
+            "div"
+        );
+
+    box.id =
+        "part5Daily";
+
+    box.style.cssText = `
+        position:fixed;
+
+        left:16px;
+        bottom:16px;
+
+        z-index:55;
+
+        width:
+            min(270px,calc(100vw - 32px));
+
+        padding:14px;
+
+        border:
+            1px solid
+            rgba(0,220,255,.16);
+
+        border-radius:15px;
+
+        background:
+            rgba(3,10,18,.82);
+
+        backdrop-filter:
+            blur(12px);
+
+        box-shadow:
+            0 12px 40px
+            rgba(0,0,0,.3);
+
+        display:none;
+
+        pointer-events:none;
+    `;
+
+
+    document.body.appendChild(
+        box
+    );
+
+
+    return box;
+
+}
+
+
+const Part5DailyUI =
+    createDailyUI();
+
+
+/* =========================================================
+   UPDATE DAILY UI
+========================================================= */
+
+function updateDailyUI(){
+
+    if(
+        !Part5DailyUI
+    ){
+        return;
+    }
+
+
+    const challenge =
+        getDailyStorage();
+
+
+    if(
+        GameState.screen !==
+        "game"
+    ){
+
+        Part5DailyUI.style.display =
+            "none";
+
+        return;
+
+    }
+
+
+    Part5DailyUI.style.display =
+        "block";
+
+
+    let progress =
+        0;
+
+
+    if(
+        challenge.id ===
+        "daily_score_20"
+    ){
+
+        progress =
+            Math.min(
+                challenge.target,
+                GameState.score
+            );
+
+    }
+
+
+    if(
+        challenge.id ===
+        "daily_coins_10"
+    ){
+
+        progress =
+            Math.min(
+                challenge.target,
+                Part4.runCoins
+            );
+
+    }
+
+
+    if(
+        challenge.id ===
+        "daily_gates_15"
+    ){
+
+        progress =
+            Math.min(
+                challenge.target,
+                Part4.runGates
+            );
+
+    }
+
+
+    const percent =
+        (
+            progress /
+            challenge.target
+        ) * 100;
+
+
+    Part5DailyUI.innerHTML = `
+
+        <div
+            style="
+                color:#53ecff;
+                font-size:8px;
+                font-weight:1000;
+                letter-spacing:2px;
+            "
+        >
+            DAILY CHALLENGE
+        </div>
+
+        <div
+            style="
+                margin-top:4px;
+                color:#e5faff;
+                font-size:13px;
+                font-weight:1000;
+            "
+        >
+            ${challenge.name}
+        </div>
+
+        <div
+            style="
+                margin-top:3px;
+                color:#667f8f;
+                font-size:8px;
+            "
+        >
+            ${challenge.description}
+        </div>
+
+        <div
+            style="
+                margin-top:9px;
+                height:5px;
+                border-radius:10px;
+                overflow:hidden;
+                background:
+                    rgba(255,255,255,.06);
+            "
+        >
+
+            <div
+                style="
+                    width:${percent}%;
+                    height:100%;
+                    background:
+                        linear-gradient(
+                            90deg,
+                            #00d9ff,
+                            #9d6cff
+                        );
+                    box-shadow:
+                        0 0 10px
+                        rgba(0,220,255,.5);
+                "
+            ></div>
+
+        </div>
+
+        <div
+            style="
+                margin-top:6px;
+                display:flex;
+                justify-content:space-between;
+                color:#607789;
+                font-size:8px;
+                font-weight:900;
+            "
+        >
+
+            <span>
+                ${progress}/${challenge.target}
+            </span>
+
+            <span
+                style="color:#ffd84d"
+            >
+                +${challenge.reward}
+            </span>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================================================
+   COMBO SYSTEM
+========================================================= */
+
+function updateCombo(dt){
+
+    if(
+        GameState.combo <= 1
+    ){
+        Part5.comboTimer = 0;
+        return;
+    }
+
+
+    Part5.comboTimer -=
+        dt;
+
+
+    if(
+        Part5.comboTimer <= 0
+    ){
+
+        GameState.combo = 1;
+
+        Part5.comboTimer = 0;
+
+        updateHUD();
+
+    }
+
+}
+
+
+/* =========================================================
+   COMBO REWARD
+========================================================= */
+
+function increaseCombo(){
+
+    GameState.combo =
+        Math.min(
+            10,
+            GameState.combo + 1
+        );
+
+
+    Part5.maxCombo =
+        Math.max(
+            Part5.maxCombo,
+            GameState.combo
+        );
+
+
+    Part5.comboTimer =
+        2.5;
+
+
+    updateHUD();
+
+
+    if(
+        GameState.combo >= 3
+    ){
+
+        playTone(
+            500 +
+            GameState.combo * 45,
+            .06,
+            "square",
+            .02
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   COMBO HUD
+========================================================= */
+
+function createComboHUD(){
+
+    const combo =
+        document.createElement(
+            "div"
+        );
+
+    combo.id =
+        "part5Combo";
+
+    combo.style.cssText = `
+        position:fixed;
+
+        left:50%;
+        top:18%;
+
+        transform:
+            translateX(-50%)
+            scale(.8);
+
+        z-index:50;
+
+        pointer-events:none;
+
+        color:#ffd84d;
+
+        font-size:15px;
+
+        font-weight:1000;
+
+        letter-spacing:2px;
+
+        opacity:0;
+
+        text-shadow:
+            0 0 15px
+            rgba(255,216,77,.8);
+
+        transition:
+            opacity .15s ease,
+            transform .15s ease;
+    `;
+
+
+    document.body.appendChild(
+        combo
+    );
+
+
+    return combo;
+
+}
+
+
+const Part5ComboHUD =
+    createComboHUD();
+
+
+/* =========================================================
+   SHOW COMBO
+========================================================= */
+
+function showCombo(){
+
+    if(
+        !Part5ComboHUD
+    ){
+        return;
+    }
+
+
+    if(
+        GameState.combo <= 1
+    ){
+
+        Part5ComboHUD.style.opacity =
+            "0";
+
+        return;
+
+    }
+
+
+    Part5ComboHUD.textContent =
+        "COMBO x" +
+        GameState.combo;
+
+
+    Part5ComboHUD.style.opacity =
+        "1";
+
+
+    Part5ComboHUD.style.transform =
+        "translateX(-50%) scale(1.15)";
+
+
+    setTimeout(
+        () => {
+
+            Part5ComboHUD.style.transform =
+                "translateX(-50%) scale(1)";
+
+        },
+        100
+    );
+
+}
+
+
+/* =========================================================
+   SCORE HOOK
+========================================================= */
+
+const part5OriginalScoreGate =
+    scoreGate;
+
+
+scoreGate =
+    function(){
+
+        const oldScore =
+            GameState.score;
+
+
+        part5OriginalScoreGate();
+
+
+        if(
+            GameState.score >
+            oldScore
+        ){
+
+            increaseCombo();
+
+            showCombo();
+
+        }
+
+
+        checkAchievements();
+
+        checkDailyChallenge();
+
+        updateDailyUI();
+
+    };
+
+
+/* =========================================================
+   COIN HOOK
+========================================================= */
+
+const part5OriginalCollectCoin =
+    collectCoin;
+
+
+collectCoin =
+    function(
+        coin,
+        index
+    ){
+
+        part5OriginalCollectCoin(
+            coin,
+            index
+        );
+
+
+        checkAchievements();
+
+        checkDailyChallenge();
+
+        updateDailyUI();
+
+    };
+
+
+/* =========================================================
+   GAME UPDATE HOOK
+========================================================= */
+
+const part5OriginalUpdateGame =
+    updateGame;
+
+
+updateGame =
+    function(dt){
+
+        part5OriginalUpdateGame(
+            dt
+        );
+
+
+        if(
+            !GameState.paused &&
+            !Runtime.gameOver
+        ){
+
+            updateCombo(
+                dt
+            );
+
+        }
+
+
+        updateDailyUI();
+
+    };
+
+
+/* =========================================================
+   START GAME HOOK
+========================================================= */
+
+const part5OriginalStartGame =
+    startGame;
+
+
+startGame =
+    function(){
+
+        Part5.maxCombo =
+            1;
+
+        Part5.comboTimer =
+            0;
+
+        GameState.combo =
+            1;
+
+
+        part5OriginalStartGame();
+
+
+        updateDailyUI();
+
+    };
+
+
+/* =========================================================
+   END GAME HOOK
+========================================================= */
+
+const part5OriginalEndGame =
+    endGame;
+
+
+endGame =
+    function(){
+
+        checkAchievements();
+
+        checkDailyChallenge();
+
+
+        part5OriginalEndGame();
+
+
+        updateDailyUI();
+
+    };
+
+
+/* =========================================================
+   SCREEN HOOK
+========================================================= */
+
+const part5OriginalShowScreen =
+    showScreen;
+
+
+showScreen =
+    function(name){
+
+        part5OriginalShowScreen(
+            name
+        );
+
+
+        updateDailyUI();
+
+    };
+
+
+/* =========================================================
+   ACHIEVEMENT SAVE VALIDATION
+========================================================= */
+
+validateAchievementData();
+
+
+/* =========================================================
+   DAILY SAVE VALIDATION
+========================================================= */
+
+if(
+    typeof GameState.dailyDate !==
+    "string"
+){
+
+    GameState.dailyDate =
+        "";
+
+}
+
+
+if(
+    typeof GameState.dailyCompleted !==
+    "boolean"
+){
+
+    GameState.dailyCompleted =
+        false;
+
+}
+
+
+/* =========================================================
+   SAVE
+========================================================= */
+
+saveGame();
+
+
+/* =========================================================
+   DEBUG
+========================================================= */
+
+window.HackerBird.achievements =
+    ACHIEVEMENTS;
+
+window.HackerBird.daily =
+    getDailyChallenge;
+
+window.HackerBird.part5 =
+    Part5;
+
+
+/* =========================================================
+   PART 5 ONLINE
+========================================================= */
+
+console.log(
+    "%cHACKERBIRD PART 5 ONLINE",
+    "color:#42ff9d;font-weight:bold;font-size:14px"
+);
+
+console.log(
+    "%cACHIEVEMENTS // DAILY // COMBO",
+    "color:#ffd84d;font-weight:bold"
+);
+
+</script>
+Klar. **Teil 6** kommt wieder ganz unten, **direkt nach Teil 5 und vor `</body></html>`**.
+
+ Ich würde Teil 6 diesmal als **Statistik-/Profil-System mit Level, XP-Leiste, Flugstatistiken und Level-Up-Effekt** ergänzen.
+
+<script>
+
+/* =========================================================
+   HACKERBIRD // PLAYER PROFILE + XP + LEVEL SYSTEM
+   PART 6
+========================================================= */
+
+/* =========================================================
+   PART 6 STATE
+========================================================= */
+
+const Part6 = {
+
+    levelUpTimer:null,
+
+    lastLevel:1,
+
+    profile:null,
+
+    xpBar:null,
+
+    levelText:null,
+
+    xpText:null
+
+};
+
+/* =========================================================
+   XP CONFIG
+========================================================= */
+
+function getXPForLevel(level){
+
+    return Math.floor(
+        100 +
+        (level - 1) * 75
+    );
+
+}
+
+/* =========================================================
+   CALCULATE PLAYER LEVEL
+========================================================= */
+
+function calculateLevel(){
+
+    let level = 1;
+
+    let xp =
+        Number(
+            GameState.xp || 0
+        );
+
+    while(
+        xp >= getXPForLevel(level)
+    ){
+
+        xp -=
+            getXPForLevel(level);
+
+        level++;
+
+        if(
+            level >= 100
+        ){
+
+            level = 100;
+
+            break;
+
+        }
+
+    }
+
+    return {
+
+        level:level,
+
+        currentXP:xp,
+
+        requiredXP:
+            level >= 100
+                ? 0
+                : getXPForLevel(level)
+
+    };
+
+}
+
+/* =========================================================
+   XP VALIDATION
+========================================================= */
+
+function validateXPData(){
+
+    if(
+        typeof GameState.xp !==
+        "number"
+    ){
+
+        GameState.xp =
+            0;
+
+    }
+
+    if(
+        !Number.isFinite(
+            GameState.xp
+        )
+    ){
+
+        GameState.xp =
+            0;
+
+    }
+
+    if(
+        GameState.xp < 0
+    ){
+
+        GameState.xp =
+            0;
+
+    }
+
+}
+
+/* =========================================================
+   ADD XP
+========================================================= */
+
+function addXP(
+    amount
+){
+
+    validateXPData();
+
+    amount =
+        Number(amount);
+
+    if(
+        !Number.isFinite(amount) ||
+        amount <= 0
+    ){
+
+        return;
+
+    }
+
+    const before =
+        calculateLevel();
+
+    GameState.xp +=
+        amount;
+
+    const after =
+        calculateLevel();
+
+    if(
+        after.level >
+        before.level
+    ){
+
+        handleLevelUp(
+            after.level
+        );
+
+    }
+
+    updateProfileUI();
+
+    saveGame();
+
+}
+
+/* =========================================================
+   LEVEL UP
+========================================================= */
+
+function handleLevelUp(
+    level
+){
+
+    Part6.lastLevel =
+        level;
+
+    showLevelUpEffect(
+        level
+    );
+
+    playTone(
+        540,
+        .08,
+        "square",
+        .035
+    );
+
+    setTimeout(
+        () => {
+
+            playTone(
+                760,
+                .08,
+                "square",
+                .035
+            );
+
+        },
+        80
+    );
+
+    setTimeout(
+        () => {
+
+            playTone(
+                1040,
+                .15,
+                "sine",
+                .04
+            );
+
+        },
+        160
+    );
+
+    showToast(
+        "LEVEL UP // LEVEL " +
+        level
+    );
+
+}
+
+/* =========================================================
+   LEVEL UP VISUAL
+========================================================= */
+
+function showLevelUpEffect(
+    level
+){
+
+    let effect =
+        document.getElementById(
+            "part6LevelUp"
+        );
+
+    if(!effect){
+
+        effect =
+            document.createElement(
+                "div"
+            );
+
+        effect.id =
+            "part6LevelUp";
+
+        effect.style.cssText = `
+            position:fixed;
+            inset:0;
+
+            z-index:1000;
+
+            display:flex;
+
+            align-items:center;
+            justify-content:center;
+
+            pointer-events:none;
+
+            background:
+                radial-gradient(
+                    circle,
+                    rgba(0,220,255,.16),
+                    transparent 55%
+                );
+
+            opacity:0;
+
+            transition:
+                opacity .2s ease;
+        `;
+
+        const text =
+            document.createElement(
+                "div"
+            );
+
+        text.id =
+            "part6LevelText";
+
+        text.style.cssText = `
+            color:#53ecff;
+
+            font-size:
+                clamp(38px,9vw,90px);
+
+            font-weight:1000;
+
+            letter-spacing:6px;
+
+            text-align:center;
+
+            text-shadow:
+                0 0 15px #00d9ff,
+                0 0 40px #00d9ff,
+                0 0 90px rgba(0,220,255,.7);
+
+            transform:
+                scale(.7);
+
+            transition:
+                transform .35s ease;
+        `;
+
+        effect.appendChild(
+            text
+        );
+
+        document.body.appendChild(
+            effect
+        );
+
+    }
+
+    const text =
+        document.getElementById(
+            "part6LevelText"
+        );
+
+    text.innerHTML = `
+        LEVEL UP
+        <div
+            style="
+                margin-top:7px;
+                font-size:.42em;
+                letter-spacing:4px;
+                color:#ffd84d;
+            "
+        >
+            LEVEL ${level}
+        </div>
+    `;
+
+    effect.style.opacity =
+        "1";
+
+    text.style.transform =
+        "scale(1.08)";
+
+    setTimeout(
+        () => {
+
+            text.style.transform =
+                "scale(1)";
+
+        },
+        150
+    );
+
+    clearTimeout(
+        Part6.levelUpTimer
+    );
+
+    Part6.levelUpTimer =
+        setTimeout(
+            () => {
+
+                effect.style.opacity =
+                    "0";
+
+            },
+            1300
+        );
+
+}
+
+/* =========================================================
+   PROFILE UI
+========================================================= */
+
+function createProfileUI(){
+
+    const profile =
+        document.createElement(
+            "div"
+        );
+
+    profile.id =
+        "part6Profile";
+
+    profile.style.cssText = `
+        position:fixed;
+
+        top:16px;
+        left:16px;
+
+        z-index:55;
+
+        width:
+            min(250px,calc(100vw - 80px));
+
+        padding:13px 15px;
+
+        border:
+            1px solid
+            rgba(0,220,255,.16);
+
+        border-radius:15px;
+
+        background:
+            rgba(3,10,18,.82);
+
+        backdrop-filter:
+            blur(12px);
+
+        box-shadow:
+            0 12px 40px
+            rgba(0,0,0,.28);
+
+        display:none;
+
+        pointer-events:none;
+    `;
+
+    profile.innerHTML = `
+
+        <div
+            style="
+                display:flex;
+                align-items:center;
+                justify-content:space-between;
+                gap:10px;
+            "
+        >
+
+            <div
+                style="
+                    color:#53ecff;
+                    font-size:8px;
+                    font-weight:1000;
+                    letter-spacing:2px;
+                "
+            >
+                PILOT PROFILE
+            </div>
+
+            <div
+                id="part6Level"
+                style="
+                    color:#ffd84d;
+                    font-size:10px;
+                    font-weight:1000;
+                "
+            >
+                LVL 1
+            </div>
+
+        </div>
+
+        <div
+            style="
+                margin-top:8px;
+                height:7px;
+                border-radius:10px;
+                overflow:hidden;
+                background:
+                    rgba(255,255,255,.06);
+            "
+        >
+
+            <div
+                id="part6XPBar"
+                style="
+                    width:0%;
+                    height:100%;
+                    border-radius:10px;
+
+                    background:
+                        linear-gradient(
+                            90deg,
+                            #00d9ff,
+                            #8d4dff,
+                            #ff4fd8
+                        );
+
+                    box-shadow:
+                        0 0 12px
+                        rgba(0,220,255,.5);
+
+                    transition:
+                        width .25s ease;
+                "
+            ></div>
+
+        </div>
+
+        <div
+            id="part6XPText"
+            style="
+                margin-top:5px;
+
+                color:#607789;
+
+                font-size:8px;
+
+                text-align:right;
+
+                font-weight:900;
+            "
+        >
+            0 / 100 XP
+        </div>
+
+    `;
+
+    document.body.appendChild(
+        profile
+    );
+
+    Part6.profile =
+        profile;
+
+    Part6.xpBar =
+        profile.querySelector(
+            "#part6XPBar"
+        );
+
+    Part6.levelText =
+        profile.querySelector(
+            "#part6Level"
+        );
+
+    Part6.xpText =
+        profile.querySelector(
+            "#part6XPText"
+        );
+
+}
+
+/* =========================================================
+   UPDATE PROFILE UI
+========================================================= */
+
+function updateProfileUI(){
+
+    if(
+        !Part6.profile
+    ){
+        return;
+    }
+
+    validateXPData();
+
+    const data =
+        calculateLevel();
+
+    Part6.levelText.textContent =
+        "LVL " +
+        data.level;
+
+    if(
+        data.level >= 100
+    ){
+
+        Part6.xpBar.style.width =
+            "100%";
+
+        Part6.xpText.textContent =
+            "MAX LEVEL";
+
+    }else{
+
+        const percent =
+            (
+                data.currentXP /
+                data.requiredXP
+            ) * 100;
+
+        Part6.xpBar.style.width =
+            Math.min(
+                100,
+                percent
+            ) + "%";
+
+        Part6.xpText.textContent =
+            data.currentXP +
+            " / " +
+            data.requiredXP +
+            " XP";
+
+    }
+
+}
+
+/* =========================================================
+   PROFILE VISIBILITY
+========================================================= */
+
+function updateProfileVisibility(){
+
+    if(
+        !Part6.profile
+    ){
+        return;
+    }
+
+    Part6.profile.style.display =
+        GameState.screen === "game"
+            ? "block"
+            : "none";
+
+}
+
+/* =========================================================
+   STATISTICS PANEL
+========================================================= */
+
+function createStatisticsPanel(){
+
+    const panel =
+        document.createElement(
+            "div"
+        );
+
+    panel.id =
+        "part6Statistics";
+
+    panel.style.cssText = `
+        position:fixed;
+
+        left:50%;
+        top:50%;
+
+        transform:
+            translate(-50%,-50%)
+            scale(.95);
+
+        z-index:300;
+
+        width:
+            min(440px,calc(100vw - 30px));
+
+        max-height:
+            calc(100vh - 40px);
+
+        overflow:auto;
+
+        padding:24px;
+
+        border:
+            1px solid
+            rgba(0,220,255,.22);
+
+        border-radius:20px;
+
+        background:
+            linear-gradient(
+                145deg,
+                rgba(7,20,34,.98),
+                rgba(2,6,13,.99)
+            );
+
+        box-shadow:
+            0 30px 100px
+            rgba(0,0,0,.6);
+
+        display:none;
+    `;
+
+    document.body.appendChild(
+        panel
+    );
+
+    return panel;
+
+}
+
+const Part6Stats =
+    createStatisticsPanel();
+
+/* =========================================================
+   BUILD STATISTICS
+========================================================= */
+
+function renderStatistics(){
+
+    const levelData =
+        calculateLevel();
+
+    const unlocked =
+        Array.isArray(
+            GameState.unlockedAchievements
+        )
+            ? GameState.unlockedAchievements.length
+            : 0;
+
+    const skins =
+        Array.isArray(
+            GameState.unlockedSkins
+        )
+            ? GameState.unlockedSkins.length
+            : 1;
+
+    Part6Stats.innerHTML = `
+
+        <div
+            style="
+                color:#53ecff;
+                font-size:10px;
+                font-weight:1000;
+                letter-spacing:3px;
+            "
+        >
+            PILOT DATABASE
+        </div>
+
+        <div
+            style="
+                margin-top:4px;
+                color:#e5faff;
+                font-size:25px;
+                font-weight:1000;
+            "
+        >
+            LEVEL ${levelData.level}
+        </div>
+
+        <div
+            style="
+                margin-top:18px;
+                display:grid;
+                grid-template-columns:
+                    repeat(2,1fr);
+                gap:9px;
+            "
+        >
+
+            ${statBox(
+                "TOTAL FLIGHTS",
+                GameState.totalFlights || 0,
+                "#53ecff"
+            )}
+
+            ${statBox(
+                "BEST SCORE",
+                GameState.bestScore || 0,
+                "#ffd84d"
+            )}
+
+            ${statBox(
+                "TOTAL GATES",
+                GameState.totalGates || 0,
+                "#ff68dc"
+            )}
+
+            ${statBox(
+                "TOTAL COINS",
+                GameState.totalCoins || 0,
+                "#42ff9d"
+            )}
+
+            ${statBox(
+                "ACHIEVEMENTS",
+                unlocked,
+                "#9d6cff"
+            )}
+
+            ${statBox(
+                "SKINS",
+                skins,
+                "#ff4fd8"
+            )}
+
+        </div>
+
+        <div
+            style="
+                margin-top:15px;
+                padding:12px;
+
+                border:
+                    1px solid
+                    rgba(0,220,255,.1);
+
+                border-radius:12px;
+
+                color:#607789;
+
+                font-size:8px;
+
+                line-height:1.7;
+
+                text-align:center;
+
+                letter-spacing:1px;
+            "
+        >
+            TOTAL XP
+            <strong
+                style="
+                    color:#53ecff;
+                    font-size:13px;
+                "
+            >
+                ${GameState.xp || 0}
+            </strong>
+        </div>
+
+        <button
+            id="part6StatsClose"
+            class="menuButton"
+            style="margin-top:14px;"
+        >
+            CLOSE
+        </button>
+
+    `;
+
+    Part6Stats.style.display =
+        "block";
+
+    const close =
+        Part6Stats.querySelector(
+            "#part6StatsClose"
+        );
+
+    close.addEventListener(
+        "click",
+        hideStatistics
+    );
+
+}
+
+function statBox(
+    title,
+    value,
+    color
+){
+
+    return `
+
+        <div
+            style="
+                padding:13px;
+
+                border:
+                    1px solid
+                    rgba(255,255,255,.06);
+
+                border-radius:12px;
+
+                background:
+                    rgba(255,255,255,.018);
+            "
+        >
+
+            <div
+                style="
+                    color:#607789;
+                    font-size:7px;
+                    font-weight:900;
+                    letter-spacing:1.3px;
+                "
+            >
+                ${title}
+            </div>
+
+            <div
+                style="
+                    margin-top:5px;
+
+                    color:${color};
+
+                    font-size:22px;
+
+                    font-weight:1000;
+                "
+            >
+                ${value}
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+/* =========================================================
+   SHOW / HIDE STATISTICS
+========================================================= */
+
+function showStatistics(){
+
+    renderStatistics();
+
+}
+
+function hideStatistics(){
+
+    Part6Stats.style.display =
+        "none";
+
+}
+
+/* =========================================================
+   KEYBOARD SHORTCUT
+========================================================= */
+
+window.addEventListener(
+    "keydown",
+    event => {
+
+        if(
+            event.code ===
+            "KeyP" &&
+            event.shiftKey
+        ){
+
+            event.preventDefault();
+
+            if(
+                Part6Stats.style.display ===
+                "block"
+            ){
+
+                hideStatistics();
+
+            }else{
+
+                showStatistics();
+
+            }
+
+        }
+
+    }
+);
+
+/* =========================================================
+   XP HOOKS
+========================================================= */
+
+const part6OriginalClaimMission =
+    claimMission;
+
+claimMission =
+    function(
+        missionId
+    ){
+
+        const before =
+            GameState.xp || 0;
+
+        part6OriginalClaimMission(
+            missionId
+        );
+
+        if(
+            (GameState.xp || 0) ===
+            before
+        ){
+
+            /*
+             * Fallback:
+             * If the older mission system
+             * did not provide XP.
+             */
+
+        }
+
+        updateProfileUI();
+
+    };
+
+/* =========================================================
+   ACHIEVEMENT XP HOOK
+========================================================= */
+
+const part6OriginalCheckAchievements =
+    checkAchievements;
+
+checkAchievements =
+    function(){
+
+        const before =
+            GameState.unlockedAchievements
+                ? GameState.unlockedAchievements.length
+                : 0;
+
+        part6OriginalCheckAchievements();
+
+        const after =
+            GameState.unlockedAchievements
+                ? GameState.unlockedAchievements.length
+                : before;
+
+        if(
+            after >
+            before
+        ){
+
+            /*
+             * Achievement rewards
+             * are already handled
+             * by the achievement system.
+             */
+
+        }
+
+        updateProfileUI();
+
+    };
+
+/* =========================================================
+   GAME START HOOK
+========================================================= */
+
+const part6OriginalStartGame =
+    startGame;
+
+startGame =
+    function(){
+
+        part6OriginalStartGame();
+
+        updateProfileUI();
+        updateProfileVisibility();
+
+    };
+
+/* =========================================================
+   GAME UPDATE HOOK
+========================================================= */
+
+const part6OriginalUpdateGame =
+    updateGame;
+
+updateGame =
+    function(dt){
+
+        part6OriginalUpdateGame(
+            dt
+        );
+
+        updateProfileUI();
+
+    };
+
+/* =========================================================
+   SCREEN HOOK
+========================================================= */
+
+const part6OriginalShowScreen =
+    showScreen;
+
+showScreen =
+    function(name){
+
+        part6OriginalShowScreen(
+            name
+        );
+
+        updateProfileVisibility();
+
+    };
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+validateXPData();
+
+createProfileUI();
+
+updateProfileUI();
+
+updateProfileVisibility();
+
+saveGame();
+
+/* =========================================================
+   DEBUG
+========================================================= */
+
+window.HackerBird.profile = {
+
+    getLevel:
+        calculateLevel,
+
+    addXP:
+        addXP,
+
+    statistics:
+        showStatistics
+
+};
+
+/* =========================================================
+   PART 6 ONLINE
+========================================================= */
+
+console.log(
+    "%cHACKERBIRD PART 6 ONLINE",
+    "color:#53ecff;font-weight:bold;font-size:14px"
+);
+
+console.log(
+    "%cPLAYER PROFILE // XP // LEVELS // STATS",
+    "color:#9d6cff;font-weight:bold"
+);
+
+</script>
+Ja. Wenn du **nur den Fix** möchtest, nimm genau diesen Block und füge ihn **ganz unten nach Teil 6** ein:
+
+<script>
+
+/* =========================================================
+   HACKERBIRD // SPACEBAR FIX
+========================================================= */
+
+window.addEventListener(
+    "keydown",
+    function(event){
+
+        if(
+            event.code === "Space" ||
+            event.code === "ArrowUp"
+        ){
+
+            event.preventDefault();
+
+            if(
+                GameState.screen === "game" &&
+                GameState.running &&
+                !Runtime.gameOver &&
+                !GameState.paused &&
+                !Part4.paused &&
+                !Part4.countdown
+            ){
+
+                Bird.flap();
+
+            }
+
+        }
+
+    },
+    false
+);
+
+console.log(
+    "%cSPACEBAR FIX ONLINE",
+    "color:#42ff9d;font-weight:bold"
+);
+
+</script>
+<script>
+
+/* =========================================================
+   HACKERBIRD // INPUT DEBUG
+========================================================= */
+
+window.addEventListener(
+    "keydown",
+    function(event){
+
+        if(
+            event.code === "Space"
+        ){
+
+            console.log(
+                "SPACE ERKANNT!",
+                {
+                    screen: GameState.screen,
+                    running: GameState.running,
+                    paused: GameState.paused,
+                    gameOver: Runtime.gameOver,
+                    countdown: Part4.countdown
+                }
+            );
+
+        }
+
+    },
+    true
+);
+
+console.log(
+    "%cINPUT DEBUG AKTIV",
+    "color:#ffd84d;font-weight:bold"
+);
+
+</script>
+<script>
+
+/* =========================================================
+   HACKERBIRD // VISIBLE INPUT TEST
+========================================================= */
+
+window.addEventListener(
+    "keydown",
+    function(event){
+
+        if(
+            event.code === "Space"
+        ){
+
+            const test =
+                document.createElement("div");
+
+            test.textContent =
+                "✓ LEERTASTE ERKANNT";
+
+            test.style.cssText = `
+                position:fixed;
+                top:20px;
+                left:50%;
+                transform:translateX(-50%);
+                z-index:99999;
+
+                padding:12px 20px;
+
+                border:1px solid #42ff9d;
+                border-radius:10px;
+
+                background:#03100a;
+                color:#42ff9d;
+
+                font-family:monospace;
+                font-weight:bold;
+                font-size:14px;
+
+                box-shadow:
+                    0 0 25px rgba(66,255,157,.4);
+            `;
+
+            document.body.appendChild(test);
+
+            setTimeout(
+                () => test.remove(),
+                1500
+            );
+
+        }
+
+    },
+    true
+);
+
+</script>
+<script>
+
+/* =========================================================
+   HACKERBIRD // FINAL INPUT FIX
+========================================================= */
+
+window.addEventListener(
+    "keydown",
+    function(event){
+
+        if(event.code !== "Space" && event.code !== "ArrowUp") return;
+
+        event.preventDefault();
+
+        /* Sobald ein Run aktiv ist, den Vogel unmittelbar nach oben setzen. */
+        if(GameState.running && !Runtime.gameOver){
+            GameState.screen = "game";
+            Bird.velocityY = GAME_CONFIG.jumpForce;
+            Bird.rotation = -0.35;
+            Bird.alive = true;
+        }
+    },
+    true
+);
+
+CANVAS.addEventListener(
+    "pointerdown",
+    function(event){
+
+        event.preventDefault();
+
+        if(GameState.running && !Runtime.gameOver){
+            GameState.screen = "game";
+            Bird.velocityY = GAME_CONFIG.jumpForce;
+            Bird.rotation = -0.35;
+            Bird.alive = true;
+        }
+    },
+    {capture:true, passive:false}
+);</script>
